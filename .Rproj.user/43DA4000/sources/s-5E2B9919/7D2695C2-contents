@@ -1,0 +1,118 @@
+### -------------------- merge -------------------- ###
+# This file takes the twitter data on the HPC from Emily and merges it with the ideal points to form a dataset with the idealpoint of each Twitter user
+# --------------- Load packages 
+library(data.table)
+library(parallel)
+library(lubridate)
+suppressMessages(library(tidyverse))
+
+cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK")) - 1
+
+
+# ------------- Get data ---------------------
+# Setup
+filelist <- c('/scratch2/echen920/elections/clean/2020-09/us-presidential-2020-clean-09-29-23.csv', 
+              '/scratch2/echen920/elections/clean/2020-09/us-presidential-2020-clean-09-30-00.csv',
+              '/scratch2/echen920/elections/clean/2020-09/us-presidential-2020-clean-09-30-01.csv',
+              '/scratch2/echen920/elections/clean/2020-09/us-presidential-2020-clean-09-30-02.csv',
+              '/scratch2/echen920/elections/clean/2020-09/us-presidential-2020-clean-09-30-03.csv')
+
+# set counter
+counter <- 0
+
+# set list of df
+datalist = list()
+
+# start loop -----------------------------------------------------
+for(i in filelist){
+  
+  # ----------- read ------------
+  # read tweets
+  read_tweets <- function(x){
+    require(data.table)
+    df <- data.table::fread(x, # name of file
+                            select=c(tweetid = "integer", userid = 'integer', screen_name = "character", sent_vader = 'numeric', date = 'character', text = 'character')) 
+  }
+  results <- parallel::mclapply(i, read_tweets, mc.cores = cores)
+  tweets <- results[[1]]
+  
+  # read ideological point estimates
+  filename <- '/project/pbarbera_665/bghafour/twitter-2020-election/data/ideal-points-merged.csv'
+  read_df <- function(x){
+    require(data.table)
+    df <- data.table::fread(x, header = T, sep = ',')
+  }
+  results <- parallel::mclapply(filename, read_df, mc.cores = cores)
+  ideology <- results[[1]]
+  rm(results)
+  
+  
+  # Set both data files to data.tables
+  data.table::setDT(tweets) 
+  data.table::setDT(ideology)
+  
+  
+  # ---------- merge --------------
+  merge_dataframes <- function(x){
+    merged_df <- data.table::merge.data.table(ideology, tweets,
+                                              by.x = 'id_str', by.y = 'userid', # keys to merge on
+                                              all.y = F) # which column to keep all rows (only twitter data, not thetas)
+  }
+  list <- list(ideology, tweets)
+  merged_df <- parallel::mclapply(list, merge_dataframes, mc.cores = cores)
+  merged_df <- merged_df[[1]]
+  data.table::setDT(merged_df) 
+  
+  
+  # delete duplicate tweets
+  #merged_df <- unique(setDT(merged_df), by = "tweetid")
+  delete_dups <- function(x){
+    merged_df <- unique(setDT(merged_df), by = "tweetid")
+  }
+  merged_df <- parallel::mclapply(merged_df, delete_dups, mc.cores = cores)
+  merged_df <- merged_df[[1]]
+  data.table::setDT(merged_df) # converts data which is a data.frame to data.table *by reference*
+  
+  
+  # Remove extra dataframes for memory
+  rm(ideology)
+  rm(tweets)
+  
+  
+  # Make column theta numeric
+  merged_df <- merged_df %>%  
+    mutate(theta = as.numeric(theta))
+  
+  # remove null sentiment scores
+  merged_df <- merged_df[!sent_vader == 0.0000]
+  
+  # counter
+  counter <- counter + 1
+  
+  # only keep one category for now
+  datalist[[i]] <- merged_df # add it to your list
+  
+}
+
+# Merge data
+merged_data <- do.call(rbind, datalist)
+
+
+# ---------------------------------- Play with dates! 
+merged_data$date <- as.POSIXct(merged_data$date, format = "%a %b %d %H:%M:%S %z %Y", tz = "GMT")
+# convert to EST
+attr(merged_data$date, "tzone") <- "America/New_York"
+# Get time
+merged_data$hour <- lubridate::hour(merged_data$date)
+merged_data$minute <- lubridate::minute(merged_data$date)
+merged_data$time <- sprintf('%02d:%02d', merged_data$hour, merged_data$minute)
+# convert character date to time
+merged_data$time <- gsub(":", "", merged_data$time)
+merged_data$time <- as.numeric(merged_data$time)
+
+
+
+# save final output ------------------------------
+setwd('/project/pbarbera_665/bghafour/twitter-2020-election/data')
+data.table::fwrite(merged_data, 'merged-data-first-debate.csv')
+
