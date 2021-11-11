@@ -28,27 +28,6 @@ rm(datalist)
 
 # -------------------- Clean data 
 # clean hashtag columns 
-clean_tweets <- function(x) {
-  x %>%
-    # Remove URLs
-    str_remove_all(" ?(f|ht)(tp)(s?)(://)(.*)[.|/](.*)") %>%
-    # Remove mentions e.g. "@my_account"
-    str_remove_all("@[[:alnum:]_]{4,}") %>%
-    # Remove hashtags
-    str_remove_all("#[[:alnum:]_]+") %>%
-    # Replace "&" character reference with "and"
-    str_replace_all("&amp;", "and") %>%
-    # Remove punctucation, using a standard character class
-    str_remove_all("[[:punct:]]") %>%
-    # Remove "RT: " from beginning of retweets
-    str_remove_all("^RT:? ") %>%
-    # Replace any newline characters with a space
-    str_replace_all("\\\n", " ") %>%
-    # Make everything lowercase
-    str_to_lower() %>%
-    # Remove any trailing whitespace around the text
-    str_trim("both")
-}
 tweets$hashtag <- tweets$hashtag %>% clean_tweets
 tweets$qtd_hashtag <- tweets$qtd_hashtag %>% clean_tweets
 tweets$rt_hashtag <- tweets$rt_hashtag %>% clean_tweets
