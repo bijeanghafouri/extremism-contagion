@@ -8,7 +8,7 @@ files <- c('/Users/bijeanghafouri/us-presidential-2020-clean-08-01-04.csv',
            '/Users/bijeanghafouri/us-presidential-2020-clean-08-01-01.csv')
 
   
-# Read data
+# ---------------- Read data
 # set counter
 counter <- 0
 # set list of df
@@ -18,8 +18,7 @@ for(i in files){
   tweets <- results[[1]]
   # counter
   counter <- counter + 1
-  # only keep one category for now
-  datalist[[i]] <- tweets # add it to your list
+  datalist[[i]] <- tweets # add to list
 }
 # Merge data
 tweets <- do.call(rbind, datalist)
@@ -27,7 +26,7 @@ rm(results)
 rm(datalist) 
 
 
-# Clean data 
+# -------------------- Clean data 
 # clean hashtag columns 
 clean_tweets <- function(x) {
   x %>%
@@ -66,11 +65,6 @@ tweets <- rbind(ex1, ex2, ex3)
 rm(ex1)
 rm(ex2)
 rm(ex3)
-
-# remove unnecessary columns
-tweets <- data.frame(tweets)
-names <- c('screen_name', 'tweet_type', 'date', 'tweetid', 'rt_hashtag', 'hashtag', 'userid')
-tweets <- tweets[names]
 
 # Save data as .csv 
 setwd('/Users/bijeanghafouri/Code/extremist-contagion/data')

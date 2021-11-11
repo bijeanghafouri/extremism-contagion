@@ -2,7 +2,6 @@
 library(pacman)
 p_load(data.table, tidyverse, igraph, here, parallel)
 
-
 # Functions
 read_tweets <- function(x){
   require(data.table)
@@ -16,10 +15,7 @@ read_tweets <- function(x){
                                    rt_hashtag = 'character')) 
 }
 
-
-
-
-clean_tweets <- function(x) {
+clean_tweets <- function(x){
   x %>%
     # Remove URLs
     str_remove_all(" ?(f|ht)(tp)(s?)(://)(.*)[.|/](.*)") %>%
