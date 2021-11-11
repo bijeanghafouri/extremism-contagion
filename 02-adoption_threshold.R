@@ -1,6 +1,7 @@
 # Adoption threshold with retweet graph 
 # ------------------ Setup 
 # Read data
+setwd(here())
 source('01-read_data.R')
 
 # if hashtag contains 'qanon', 1 if not 0 (should be all 1)
@@ -56,11 +57,5 @@ tweets <- tweets %>%
   fill(n, .direction = "up")
 
 # Remove unnecessary data
-rm(exposure_count)
-rm(exposures)
-rm(joined_df)
-rm(temp)
-rm(times)
-rm(cores)
-rm(files)
-rm(clean_tweets)
+rm(exposure_count, exposures, joined_df, temp, times, cores, files, clean_tweets)
+

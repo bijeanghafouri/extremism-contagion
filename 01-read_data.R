@@ -22,8 +22,10 @@ for(i in files){
 }
 # Merge data
 tweets <- do.call(rbind, datalist)
-rm(results) 
-rm(datalist) 
+rm(results, datalist) 
+
+
+# Total of 67,181,551 tweets posted in July 2020 related to the 2020 Presidential election. 
 
 
 # -------------------- Clean data 
@@ -33,20 +35,21 @@ tweets$qtd_hashtag <- tweets$qtd_hashtag %>% clean_tweets
 tweets$rt_hashtag <- tweets$rt_hashtag %>% clean_tweets
 
 # keep rows that have 'qanon' hashtag 
-ex1 <- dplyr::filter(tweets, grepl("qanon", hashtag))
-ex2 <- dplyr::filter(tweets, grepl("qanon", rt_hashtag))
-ex3 <- dplyr::filter(tweets, grepl("qanon", qtd_hashtag))
+temp_1 <- dplyr::filter(tweets, grepl("qanon", hashtag))
+temp_2 <- dplyr::filter(tweets, grepl("qanon", rt_hashtag))
+temp_3 <- dplyr::filter(tweets, grepl("qanon", qtd_hashtag))
 
 # bind temporary dataframes 
-tweets <- rbind(ex1, ex2, ex3)
+tweets <- rbind(temp_1, temp_2, temp_3)
 
 # remove temporary dataframes 
-rm(ex1)
-rm(ex2)
-rm(ex3)
+rm(temp_1, temp_2, temp_3)
 
 # Save data as .csv 
 setwd('/Users/bijeanghafouri/Code/extremist-contagion/data')
 fwrite(tweets, 'tweets-qanon-clean.csv')
 
+
+
+# Total of 351,108 tweets posted in July 2020 related to the 2020 Presidential election with hashtag qanon 
 

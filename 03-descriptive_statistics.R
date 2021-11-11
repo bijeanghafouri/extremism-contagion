@@ -1,5 +1,6 @@
 # Descriptive statistics 
 # Read previous script
+setwd(here())
 source('02-adoption_threshold.R')
 
 # ----------- Compute statistics ------------------
@@ -39,6 +40,12 @@ frequency_table
 # plot 
 ggplot(frequency_table, aes(x=Exposures, y=Frequency)) + 
   geom_point()
+
+# plot without those without exposure 
+temp <- frequency_table[!frequency_table$Exposures == 0, ]
+ggplot(temp, aes(x=Exposures, y=Frequency)) + 
+  geom_point()
+
 
 
 # ---------- Ideology plot 
