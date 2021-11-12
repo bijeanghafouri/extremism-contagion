@@ -1,15 +1,16 @@
 ---
-title: "Descriptive Statistics"
+title: "Descriptive Statistics - POIR614 Final Project"
 author: "Bijean Ghafouri"
 date: "11/11/2021"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.pos = "!H", out.extra = "", echo = TRUE)
 ```
 
 
@@ -42,7 +43,7 @@ Although this may be interesting to measure, I do not capture these possibilitie
 # Data visualization  
 Here, I show some density plots that demonstrate my preliminary results. 
 
-```{r import, include=FALSE}
+```{r, message = F, warning=F, include = F}
 library(pacman)
 p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer)
 tweets <- read_csv("tweets-qanon-clean.csv")
@@ -70,7 +71,7 @@ df_adopted_reduced_exposed <- df_adopted_reduced[df_adopted_reduced$n != 0, ]
 
 
 First, we can plot the density distribution of the number of exposures before adoption. This includes users who require 0 exposures, which represent 60% of the sample. 
-```{r}
+```{r, echo = FALSE,  warning=F}
 ggplot(data = df_adopters, 
        aes(x = n, fill = 'Red')) + 
   geom_density(alpha=0.3) + 
@@ -84,7 +85,7 @@ ggplot(data = df_adopters,
 
 Next, let's consider users who required at least one exposure before using #qanon. 
 
-```{r}
+```{r, echo = FALSE, warning=F}
 ggplot(data = df_adopters_exposed, 
        aes(x = n, fill = 'Red')) + 
   geom_density(alpha=0.3) + 
@@ -98,7 +99,7 @@ ggplot(data = df_adopters_exposed,
 
 We notice that only a few users require more than 100 exposures to adopt the behavior. Let's exclude these users from our sample, considering users who required less than 100 exposures. 
 
-```{r}
+```{r, echo = FALSE, warning=F}
 ggplot(data = df_adopted_reduced, 
        aes(x = n, fill = 'Red')) + 
   geom_density(alpha=0.3) + 
@@ -112,7 +113,7 @@ ggplot(data = df_adopted_reduced,
 
 
 Finally, let us consider the same sample, but with users who again required at least one exposure before adoption. 
-```{r import, include=FALSE}
+```{r, echo = FALSE, warning=F}
 ggplot(data = df_adopted_reduced_exposed, 
        aes(x = n, fill = 'Red')) + 
   geom_density(alpha=0.3) + 
