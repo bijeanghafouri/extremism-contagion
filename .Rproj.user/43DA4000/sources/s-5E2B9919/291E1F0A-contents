@@ -1,0 +1,150 @@
+---
+title: "Challenge 5: Dictionary methods"
+author: Bijean Ghafouri
+output: html_document
+---
+
+In this challenge, you will use a dictionary method to identify populist rhetoric in British parties' public Facebook posts.
+
+We'll start by loading the data, which contains posts on the Facebook pages of the party and candidate for all five major British parties from 2008 until 2017.
+
+```{r}
+library(quanteda)
+uk <- read.csv("data/FB-UK-parties.csv", stringsAsFactors = FALSE)
+table(uk$party)
+table(uk$name)
+```
+
+We will rely on the populism dictionary from Rooduijn, Matthijs, and Teun Pauwels (2011) “Measuring Populism: Comparing Two Methods of Content Analysis.” West European Politics 34(6): 1272–83 1237
+
+Appendix B of that paper provides the term entries for a dictionary key for the concept populism. We will implement this as a dictionary object with quanteda, and apply it to the UK Facebook posts. (Note that in the article they apply them to the party manifestos.)
+
+For your convenience, I already typed the list of populist words here:
+
+```{r}
+populist_dict <- dictionary(list(
+  populism = c(
+      "elit*",
+      "consensus*",
+      "undemocratic*",
+      "referend*",
+      "corrupt*",
+      "propagand*",
+      "politici*",
+      "*deceit*",
+      "*deceiv*",
+      "*betray*",
+      "shame*",
+      "scandal*",
+      "truth*",
+      "dishonest*",
+      "establishm*",
+      "ruling*")))
+
+```
+
+Now, create a corpus object with quanteda, and then group all the posts by a given party into a single row of the dfm, using `dfm_group()`.
+
+```{r}
+# create corpus ---------------------------
+uk_corpus <- corpus(uk)
+
+# pre-process ---------------------------
+# tokenize
+toks <- tokens(uk_corpus,
+               what = "word",
+               remove_punct = TRUE,
+               remove_url = TRUE,
+               verbose = TRUE)
+toks <- tokens_tolower(toks)    # remove caps 
+
+# create a dfm 
+twdfm <- dfm(toks, verbose = TRUE)
+
+# trim the dfm 
+twdfm <- dfm_trim(twdfm, min_docfreq = 3, verbose = TRUE)
+  
+# remove stopwords
+twdfm <- dfm(twdfm, remove=c(stopwords("english"), "https", "rt", "amp", "http", "can", "u", '£', '�', 'make'), verbose=TRUE)
+
+
+# group posts ---------------------------
+grouped_dfm <- dfm_group(twdfm, groups = docvars(twdfm, "name"))
+grouped_dfm
+
+```
+
+Do you think it makes sense to normalize for document length in this context? If so, make sure you convert the DFM into proportions. If not, leave as is. Then, use `dfm_lookup` to identify the extent to which each party uses populist rhetoric on social media. What do you find?
+
+```{r}
+# To determine whether we should normalize, let's get length of the text
+library(stringr)
+uk$Length <- str_count(uk$text)
+summary(uk$Length) #    we see that there is a good amount of variance, so we should normalize! 
+
+# turn into proportions
+twdfm <- dfm_weight(grouped_dfm, scheme = "prop")
+
+# apply dictionary
+populist <- dfm_lookup(twdfm, dictionary = populist_dict)
+populist
+```
+
+I find that UKIP, the far-right party in the UK, is the most populist -- this is not surprising given how extremists use populist messaging in narratives across Western democracies. Following is Nicola Sturgeon and the SNP, the leader of the SNP and the SNP itself. We can explain this with both being pro-Scotland, quasi-separatist and nationalist resembling Catalonia in Spain and Quebec in Canada -- not populist per se, but simply representing a different people which can be confused with populism and nativism. 
+
+
+
+
+We will now discuss the _precision_ of your dictionary. Use the `kwic()` function to find instances of each of the dictionary terms above in this corpus. Do you think most instances do indeed refer to populist rhetoric?
+
+```{r echo = T, results = 'hide'}
+# This function only takes a character, corpus or token as argument. Can't evaluate dfm... 
+kwic(
+  toks,
+  pattern = populist_dict,
+  window = 5,
+  separator = " "
+)
+```
+The referendum dictionary item tends to capture text that refers to voting ('join the campaign'), legislation  ('a result of the scottish') communication, decision-making ('labour would not deliver') and much more than what referendum really means. I think in the first place this term should not be in the dictionary, as it really only means when the electorate is asked to vote on a specific issue.  
+
+In general, what is being picked up is often different from populism. Here, any type of campaign rhetoric is classified as populism, which should not be the case. I am not sure whether it would even be possible to classify populism on a tweet/facebook post level... parties/candidates either engage in populist messaging or not. However, the previous exercise does tell us that we can attribute different levels of populism to different parties/candidates accurately.
+
+
+
+
+What about _recall_? Are there any relevant words that were excluded? Use `kwic()` to think through potential new words you may want to add, and re-run the analysis. Do the results change?
+
+```{r}
+head(kwic(toks, pattern = 'masses'))
+head(kwic(toks, pattern = 'bureaucracy'))
+head(kwic(toks, pattern = 'silent'))
+```
+
+
+
+Media accounts have often depicted Jeremy Corbyn as a populist leader. If that's the case, we may expect to find that his Facebook posts tend to rely more often on populist rhetoric than Labour's Facebook page. Is that observation supported by the data? Write similar code as above to answer this question.
+
+```{r}
+df <- convert(populist, to = "data.frame")
+df$populism <- df$populism*100
+df[order(df$populism),]
+df
+
+df[df$doc_id == 'Jeremy Corbyn', ]$populism - df[df$doc_id == 'The Labour Party', ]$populism
+```
+We see that the populism score for Jeremy Corbyn facebook posts is 7 point higher than for the Liberal Democrats, a significant difference. 
+
+
+
+One cognitive explanation for the success of populist appeals is that it expresses anger, which is likely to affect voters' emotional states. Use the LIWC dictionary to test whether the party that you identified as using populist rhetoric more frequently is also more likely to use anger words.
+
+```{r}
+# ------------ apply dictionary
+# Instead of sentiment, I use the moral foundations dictionary
+download.file("http://bit.ly/37cV95h", tf <- tempfile())
+dictliwc <- dictionary(file = tf, format = "LIWC")
+morality <- dfm_lookup(twdfm, dictionary = dictliwc)
+morality
+```
+

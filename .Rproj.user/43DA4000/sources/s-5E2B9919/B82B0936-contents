@@ -1,0 +1,229 @@
+\documentclass[a4paper]{book}
+\usepackage{amssymb}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{bm}
+\usepackage[margin=1in]{geometry}
+\newcommand\setItemnumber[1]{\setcounter{enumi}{\numexpr#1-1\relax}}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Bijean Ghafouri}
+\lhead{PSYCH 625 - Applied Machine Learning}
+\rfoot{Page \thepage}
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+<<include=FALSE, echo=FALSE>>=
+library(knitr)
+opts_chunk$set(
+concordance=TRUE
+)
+#setwd("~/Documents/University/USC/Fall2020/PSYC 625/")
+@
+
+\title{Homework - Week 4}
+\author{Bijean Ghafouri}
+\maketitle
+
+\section*{Applied}
+\begin{enumerate}
+\setItemnumber{9}
+\item This question uses the variables dis (the weighted mean of distances
+to five Boston employment centers) and nox (nitrogen oxides concentration
+in parts per 10 million) from the Boston data. We will treat
+dis as the predictor and nox as the response.
+
+\begin{enumerate}
+\item Use the poly() function to fit a cubic polynomial regression to
+predict nox using dis. Report the regression output, and plot
+the resulting data and polynomial fits.
+<<fig=T>>=
+library(MASS)
+Boston <- na.omit(Boston)
+
+# fit polynomial regression
+lm_fit <-  lm(nox ~ poly(dis, 3), data = Boston)
+summary(lm_fit)
+
+# create grid of values
+dislims <- range(Boston$dis)
+dis_grid <- seq(dislims[1], dislims[2], by = 0.1)
+predictions <- predict(lm_fit, newdata = list(dis= dis_grid), se=TRUE)
+se_bands <- predictions$fit + cbind(2*predictions$se.fit, -2*predictions$se.fit)
+par(mfrow=c(1,1), mar=c(4.5,4.5,1,1), oma=c(0,0,4,0))
+
+# plot
+plot(Boston$dis, Boston$nox, xlim=dislims, cex=0.5, col="darkgrey")
+lines(dis_grid, predictions$fit, col = "red", lwd = 2)
+matlines(dis_grid, se_bands, lwd=1, col="blue", lty=3)
+
+@
+
+
+\item Plot the polynomial fits for a range of different polynomial
+degrees (say, from 1 to 10), and report the associated residual
+sum of squares.
+<<fig=T>>=
+rsss = rep(NA, 10)
+for(i in 1:10){
+    lm_fit = lm(nox ~ poly(dis, i), data = Boston)
+    rsss[i] = sum(lm_fit$residuals^2)
+}
+plot(rsss, type="b")
+rsss
+@
+
+
+\item Perform cross-validation or another approach to select the optimal
+degree for the polynomial, and explain your results.
+<<fig=T>>=
+set.seed(123)
+library(boot)
+crossv <- rep(NA, 10)
+for (i in 1:10) {
+    glm_fit <-  glm(nox ~ poly(dis, i), data = Boston)
+    crossv[i] <-  cv.glm(Boston, glm_fit, K = 10)$delta[2]
+    }
+crossv
+
+plot(crossv, xlab = "Polynomial Degree", ylab = "Cross-Validation error", type = "b", pch = 20, 
+    lwd = 2)
+@
+The optimial polynomial seems to be at the fourth degree, as the error increases slightly until reaching the 9th degree which, for some reason, suddenly increases the error.
+
+\item Use the bs() function to fit a regression spline to predict nox
+using dis. Report the output for the fit using four degrees of
+freedom. How did you choose the knots? Plot the resulting fit
+<<fig=T>>=
+library(splines)
+sp_fit = lm(nox ~ bs(dis, df = 4, knots = c(4, 10)), data = Boston)
+predictions <- predict(sp_fit, newdata = list(dis = dis_grid), se = T)
+plot(nox ~ dis, data = Boston, col = "darkgrey")
+lines(dis_grid, predictions$fit, col = "red", lwd = 2)
+@
+By plotting \code{dis}, we can see that the data breaks at around $4$ and $10$. 
+
+\item Now fit a regression spline for a range of degrees of freedom, and
+plot the resulting fits and report the resulting RSS. Describe the
+results obtained.
+<<>>=
+library(splines)
+set.seed(123)
+rsss <- rep(NA,10)
+for (i in 3:10) {
+  sp_fit <- lm(nox ~ bs(dis, df = i), data=Boston)
+  rsss[i-3] <- sum(sp_fit$residuals^2)
+}
+rsss
+@
+We can see that the RSS declines up to the 5th degree of freedom before going up again, indicating a u-shaped curve. 
+
+\item Perform cross-validation or another approach in order to select
+the best degrees of freedom for a regression spline on this data.
+Describe your results.
+<<>>=
+set.seed(123)
+crossv = rep(NA, 10)
+for (i in 3:10) {
+    lm.fit = glm(nox ~ bs(dis, df = i), data = Boston)
+    crossv[i] = cv.glm(Boston, lm.fit, K = 10)$delta[2]
+}
+crossv
+@
+The error has very little variation, but is still at the lowest at the 5th degree of freedom.
+\end{enumerate}
+
+
+\item This question relates to the \code{College} data set.
+\begin{enumerate}
+\item Split the data into a training set and a test set. Using out-of-state
+tuition as the response and the other variables as the predictors,
+perform forward stepwise selection on the training set in order
+to identify a satisfactory model that uses just a subset of the
+predictors.
+<<fig=T>>=
+library(leaps)
+library(ISLR)
+# load data
+College <- na.omit(College)
+
+# Create a 80-20 split between training and test sets
+train_temp <- sample(1:nrow(College), nrow(College)*0.8 , replace=F)  
+train <- College[train_temp, ]
+test <- College[-train_temp, ]
+
+# predict function from chapter 6
+predict.regsubsets <- function(object, newdata, id, ...){
+  form <- as.formula(object$call[[2]])
+  mat <- model.matrix(form, newdata)
+  coefi <- coef(object, id=id)
+  xvars <- names(coefi)
+  mat[,xvars]%*%coefi
+}
+
+# Stepwise selection fit
+step_fit <- regsubsets(Outstate ~ ., data = train, nvmax = 17, method = "forward")
+step_summary <- summary(step_fit)
+
+# Compute errors
+errors <- rep(NA, 17)
+for(i in 1:17) {
+  predictions <- predict(step_fit, test, id = i)
+  errors[i] <- mean((test$Outstate - predictions)^2)
+}
+par(mfrow=c(2,2))
+
+# Error plots
+plot(errors, type="b", main="Test MSE")
+mins <- which.min(errors)  
+
+plot(step_summary$adjr2, type="b", main="Adjusted R^2")
+maxr2 <- which.max(step_summary$adjr2)  
+
+plot(step_summary$cp, type="b", main="cp")
+mins <- which.min(step_summary$cp)  
+
+plot(step_summary$bic, type="b", main="bic")
+mins <- which.min(step_summary$bic)  
+
+@
+
+\item Fit a GAM on the training data, using out-of-state tuition as
+the response and the features selected in the previous step as
+the predictors. Plot the results, and explain your findings.
+<<fig=T>>=
+library(gam)
+
+gam_fit <-  gam(Outstate ~ Private + s(Room.Board, df = 2) + s(PhD, df = 2) + 
+    s(perc.alumni, df = 2) + s(Expend, df = 2) + s(Grad.Rate, df = 2), data = train)
+par(mfrow = c(2, 3))
+plot(gam_fit, se = T, col = "red")
+@
+The plots indicate that the relationship between the outcome and \code{Expend}, \code{PhD} and \code{Grad.Rate} are rather non-linear, while the other predictors remain linear when the other predictors are at their average value. 
+
+
+\item Evaluate the model obtained on the test set, and explain the
+results obtained.
+<<>>=
+predictions <-  predict(gam_fit, test)
+errors <- mean((test$Outstate - predictions)^2)
+errors
+@
+
+
+\item For which variables, if any, is there evidence of a non-linear
+relationship with the response?\\
+
+The plots indicate that the relationship between the outcome and \code{Expend}, \code{PhD} and \code{Grad.Rate} are rather non-linear, while the other predictors remain linear when the other predictors are at their average value. 
+
+
+
+\end{enumerate}
+\end{enumerate}
+\end{document}

@@ -1,27 +1,27 @@
 {
-    "id": "2798BBBA",
-    "path": "~/Code/extremist-contagion/03-descriptive_statistics.R",
-    "project_path": "03-descriptive_statistics.R",
-    "type": "r_source",
-    "hash": "0",
+    "id": "773DC8F9",
+    "path": "~/Code/extremist-contagion/descriptive-statistics.Rmd",
+    "project_path": "descriptive-statistics.Rmd",
+    "type": "r_markdown",
+    "hash": "3456583873",
     "contents": "",
     "dirty": false,
-    "created": 1636446813872.0,
+    "created": 1636697627974.0,
     "source_on_save": false,
     "relative_order": 4,
     "properties": {
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "11,41",
-        "scrollLine": "3"
+        "cursorPosition": "29,0",
+        "scrollLine": "24"
     },
     "folds": "",
-    "lastKnownWriteTime": 1636696168,
+    "lastKnownWriteTime": 1636698980,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1636696168753,
+    "last_content_update": 1636698980469,
     "read_only": false,
     "read_only_alternatives": []
 }

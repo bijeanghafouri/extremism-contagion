@@ -1,0 +1,24 @@
+{
+    "id": "B5E4665C",
+    "path": "~/Code/extremist-contagion/02-adoption_threshold.R",
+    "project_path": "02-adoption_threshold.R",
+    "type": "r_source",
+    "hash": "103555638",
+    "contents": "",
+    "dirty": false,
+    "created": 1636697817960.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1636658975,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1636658975,
+    "read_only": false,
+    "read_only_alternatives": []
+}

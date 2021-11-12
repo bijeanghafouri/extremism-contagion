@@ -1,26 +1,26 @@
 {
-    "id": "D0B1449C",
+    "id": "E3C5B647",
     "path": "~/Code/extremist-contagion/01-read_data.R",
     "project_path": "01-read_data.R",
     "type": "r_source",
     "hash": "0",
     "contents": "",
-    "dirty": true,
-    "created": 1636605828800.0,
+    "dirty": false,
+    "created": 1636697818780.0,
     "source_on_save": false,
-    "relative_order": 2,
+    "relative_order": 3,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "10,0",
-        "scrollLine": "3"
+        "cursorPosition": "55,18",
+        "scrollLine": "52"
     },
-    "folds": "17|16|23|0|\n",
-    "lastKnownWriteTime": 1636670355,
+    "folds": "",
+    "lastKnownWriteTime": 1636696341,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1636695308131,
+    "last_content_update": 1636696341,
     "read_only": false,
     "read_only_alternatives": []
 }
