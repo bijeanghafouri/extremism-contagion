@@ -9,7 +9,7 @@ source('00-setup.R')
 tweets <- read_csv("tweets-qanon-clean.csv")
 
 # ----------- Compute statistics ------------------
-# Dataframe with unique users only. One row = one user. 
+# Dataframe with unique users only, where One row = one user. 
 unique_users <- tweets %>% 
   distinct(screen_name, .keep_all = TRUE)
 
