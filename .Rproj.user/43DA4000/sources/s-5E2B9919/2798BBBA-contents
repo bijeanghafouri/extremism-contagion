@@ -1,7 +1,12 @@
 # Descriptive statistics 
-# Read previous script
 setwd(here())
-source('02-adoption_threshold.R')
+
+# Run 02 if data not collected
+#source('02-adoption_threshold.R')
+
+# Import data if collected
+source('00-setup.R')
+tweets <- read_csv("tweets-qanon-clean.csv")
 
 # ----------- Compute statistics ------------------
 # Dataframe with unique users only. One row = one user. 
@@ -17,7 +22,7 @@ nrow(df_adopters)
 
 
 # Number of adopters with prior exposure, i.e. they were exposed to #qanon THEN they used the hashtag 
-df_adopters_exposed <- df_adopters[!is.na(df_adopters$n), ]
+df_adopters_exposed <- df_adopters[!df_adopters$n == 0, ]
 nrow(df_adopters_exposed)
 
 
@@ -41,7 +46,6 @@ frequency_table <- as.data.frame(table(df_adopters$n))
 colnames(frequency_table)[1] <- 'Exposures'
 colnames(frequency_table)[2] <- 'Frequency'
 frequency_table
-
 
 
 
@@ -98,5 +102,3 @@ ggplot(data = df_adopted_reduced_exposed,
 
 # ---------- Ideology plot 
 # Use Example 4: Visualize temperature data. from http://www.sthda.com/english/articles/32-r-graphics-essentials/133-plot-one-variable-frequency-graph-density-distribution-and-more/
-
-

@@ -9,7 +9,7 @@ files <- c('/Users/bijeanghafouri/us-presidential-2020-clean-08-01-04.csv',
            '/Users/bijeanghafouri/us-presidential-2020-clean-08-01-02.csv', 
            '/Users/bijeanghafouri/us-presidential-2020-clean-08-01-01.csv')
 
-  
+
 # ---------------- Read data
 # set counter
 counter <- 0
