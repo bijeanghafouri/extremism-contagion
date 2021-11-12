@@ -1,6 +1,8 @@
 source('00-setup.R')
 
 # cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK")) - 1
+# files <- list.files(pattern = '*.csv')
+
 cores <- 1
 files <- c('/Users/bijeanghafouri/us-presidential-2020-clean-08-01-04.csv', 
            '/Users/bijeanghafouri/us-presidential-2020-clean-08-01-03.csv', 
