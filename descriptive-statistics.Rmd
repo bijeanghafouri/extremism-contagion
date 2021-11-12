@@ -3,9 +3,9 @@ title: "Descriptive Statistics - POIR614 Final Project"
 author: "Bijean Ghafouri"
 date: "11/11/2021"
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
