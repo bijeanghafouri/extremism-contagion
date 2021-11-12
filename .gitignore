@@ -1,3 +1,11 @@
-extremist-contagion.Rproj
-initial-testing.R
-data
+.extremist-contagion.Rproj
+.initial-testing.R
+.data
+
+   
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
