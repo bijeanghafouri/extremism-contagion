@@ -1,6 +1,6 @@
 # Packages
 library(pacman)
-p_load(data.table, tidyverse, igraph, here, parallel)
+p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer)
 
 # Functions
 read_tweets <- function(x){

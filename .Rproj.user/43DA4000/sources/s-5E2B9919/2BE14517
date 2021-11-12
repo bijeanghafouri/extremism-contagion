@@ -3,7 +3,7 @@
     "path": "~/Code/extremist-contagion/00-setup.R",
     "project_path": "00-setup.R",
     "type": "r_source",
-    "hash": "2817875773",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1636655898203.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "5,27",
+        "cursorPosition": "2,66",
         "scrollLine": "0"
     },
     "folds": "5|27|15|0|\n17|28|37|0|\n",
-    "lastKnownWriteTime": 1636657405,
+    "lastKnownWriteTime": 1636691802,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1636660382340,
+    "last_content_update": 1636691802191,
     "read_only": false,
     "read_only_alternatives": []
 }
