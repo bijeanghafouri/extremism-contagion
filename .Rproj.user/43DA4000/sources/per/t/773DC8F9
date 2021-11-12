@@ -3,7 +3,7 @@
     "path": "~/Code/extremist-contagion/descriptive-statistics.Rmd",
     "project_path": "descriptive-statistics.Rmd",
     "type": "r_markdown",
-    "hash": "3456583873",
+    "hash": "1453107247",
     "contents": "",
     "dirty": false,
     "created": 1636697627974.0,
@@ -13,15 +13,16 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "29,0",
-        "scrollLine": "24"
+        "cursorPosition": "61,0",
+        "scrollLine": "50",
+        "last_setup_crc32": "5E2B9919bb338d19"
     },
     "folds": "",
-    "lastKnownWriteTime": 1636698980,
+    "lastKnownWriteTime": 1636701034,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1636698980469,
+    "last_content_update": 1636701034180,
     "read_only": false,
     "read_only_alternatives": []
 }

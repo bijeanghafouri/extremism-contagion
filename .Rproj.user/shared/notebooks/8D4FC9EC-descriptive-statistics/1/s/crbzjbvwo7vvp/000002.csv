@@ -1,0 +1,10 @@
+"0","ggplot(data = df_adopters, "
+"0","       aes(x = n, fill = 'Red')) + "
+"0","  geom_density(alpha=0.3) + "
+"0","  ggtitle(""Density plot of Tweet exposures before adopting #qanon"") + "
+"0","  xlab('Exposures to #Qanon') + ylab(""Density"") + "
+"0","  theme_bw() + "
+"0","  guides(fill = FALSE) "
+"2","Warning:"
+"2"," `guides(<scale> = FALSE)` is deprecated. Please use `guides(<scale> = ""none"")` instead.
+"
