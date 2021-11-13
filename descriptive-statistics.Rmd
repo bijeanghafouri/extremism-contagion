@@ -1,11 +1,11 @@
 ---
-title: "Descriptive Statistics - POIR613 Final Project"
+title: "Descriptive Statistics - POIR 613 Final Project"
 author: "Bijean Ghafouri"
 date: "11/11/2021"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -33,18 +33,21 @@ Empirically, I demonstrate using complex contagion that extremist behavior requi
 
 
 ### Exposure and adoption 
-In this project, I measure the exposure of tweets and subsequent adoption of #qanon. This hashtag is meant to conceptualize extremist behavior. I consider users who use #qanon in one of their tweets as adopting extremist political behavior. I consider users exposed to #qanon when they retweet, quote tweet or reply to a tweet using #qanon. Ideally, exposure would be measure implicitly, in which we measure exposure when a user follows another that used the hashtag previously. Instead, I use an explicit measure of exposure where we know a user is consciously exposed to #qanon since they engaged with the tweet in some capacity. A user adopts an extremist behavior when they use #qanon in a tweet they authored. 
+My goal is to measure how many exposures to #qanon is required \textit{before} a user authors a tweet using #qanon. This hashtag is meant to conceptualize extremist behavior. I consider users who use #qanon in a tweets as adopting extremist political behavior. Furthermore, I consider users exposed to #qanon when they retweet, quote tweet or reply to a tweet using #qanon. 
+
+Past studies model complex contagion differently (Fink et al. 2016). Researchers will measure at the time of adoption how many users followed had also adopted the behavior. We may consider this an implicit measure of complex contagion, where exposure is assumed. Prior exposure is not necessarily internalized by the user, since they do not necessarily see their followers' behavior. For example, a user might follow 3 users who used #qanon before using the hashtag himself, but that user never saw these individuals use that hashtag.
+
+In this project, I use an explicit measure of complex contagion. As with the implicit measure, we know how many users followed adopted the behavior. Here however we also know that the user was directly exposed to the behavior, since they engaged with that behavior online. For example, if a user retweets, replies or quotes a tweet using #qanon, we consider this to be an explicit exposure. 
 
 
-To model complex contagion, I count the number of exposures a user had of #qanon before themselves using the hashtag. Out of the 67,181,551 tweets posted in June 2020 related to the US Presidential election, 351,108 tweets contained #qanon without 83,867 unique users. Out of these tweets, only 4024 tweets were original, meaning that 4024 users demonstrate the adoption of extremist behavior. 
+To model complex contagion, I count how many times a user was exposed to #qanon behavior using the hashtag. Out of the 67,181,551 tweets posted in June 2020 related to the US Presidential election, 351,108 tweets contained #qanon authored from 83,867 unique users. Out of these tweets, only 4024 tweets were original, meaning that 4024 users adopted our measure of extremist behavior. 
 
-Out of these 4024 users who wrote at least one tweet with #qanon, only 1624 users were exposed to #qanon prior to adopting the behavior. This means that 2400 users in the sample used #qanon without prior exposure. 
+Out of these 4024 users who authored at least one tweet with #qanon, only 1624 users were exposed to #qanon prior to adopting the behavior. This means that 2400 users in the sample used #qanon without prior exposure. 
 
 Among users who required prior exposure to adopt extremist behavior (1624 users), we observe an average of 5.467 exposures prior to behavior adoption. Among the entire sample of 4024 users, the average is 2.206 exposures prior to behavior adoption. In other words, Twitter users who authored a tweet containing #qanon were exposed to tweets authored by other users they saw on their timeline about 2.2 times before they authored that tweet. 
 
 
-It is important to mention that I do not measure exposures to #qanon after the first time a user adopts the behavior. I mark a difference between behavior adoption and extremist expression. That is, adoption measures the first time a user tweets with #qanon. Extremist expression includes the number of times a user tweets #qanon. It is possible that a single exposure enables a user to initially adopt the behavior, while they subsequently require far most exposures to express political extremism frequently. On the contrary, it is possible for a user to require multiple exposures to initially adopt the behavior, but subsequently 
-Although this may be interesting to measure, I do not capture these possibilities in this report. 
+It is important to mention that I do not measure exposures to #qanon after the first time a user adopts the behavior. I mark a difference between behavior adoption and extremist expression. That is, adoption measures the first time a user tweets with #qanon. Extremist expression measures the number of times a user tweets #qanon. It is possible that a single exposure enables a user to initially adopt the behavior, while they subsequently require far more exposures to express political extremism frequently. On the contrary, it is possible for a user to require multiple exposures to initially adopt the behavior, but subsequently use extremist hashtag frequently without exposures. Although this may be interesting to measure, I do not capture these possibilities in this report. 
 
 
 
