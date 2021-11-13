@@ -1,5 +1,5 @@
 ---
-title: "Descriptive Statistics - POIR614 Final Project"
+title: "Descriptive Statistics - POIR613 Final Project"
 author: "Bijean Ghafouri"
 date: "11/11/2021"
 output:
@@ -13,13 +13,23 @@ output:
 knitr::opts_chunk$set(fig.pos = "!H", out.extra = "", echo = TRUE)
 ```
 
-
-# Data, concepts and measures
-First, I describe the data used and how I prepared it. I use a dataset published online by Chen, Deb and Ferrara (2021) that collected all tweets related to the 2020 US Presidential election from early 2020 until the summer of 2021. These tweets were collected through keyword search using Twitter's API.
+# Introduction
+### Data
+First, I describe the data I use and how I prepared it. I use a dataset published by Chen, Deb and Ferrara (2021) which includes all tweets related to the 2020 US Presidential election from early 2020 until the summer of 2021. These tweets were collected through keyword search using Twitter's API.
 
 From this data, I sample all tweets posted in June 2020. In total, this represents 67,181,551 tweets related to the election (in English). 
 
-The goal of this report is to show preliminary results related to my term project. In this project, I seek to describe the persuasive efficiency of extremist content on social media. Using complex contagion, I hope to demonstrate that extremist behavior requires less exposure to adopt relative to other types of political behavior. My hypothesis is that holding exposure constant, users on Twitter are more likely to adopt extremist behavior than moderate behavior. 
+### Project
+In this report, I show preliminary results on my project related to the spread of political extremism online. In this project, I describe the efficiency of extremist persuasion on Twitter. To describe the persuasion of online extremism, I characterize the context of \textit{adopting} extremist behavior. What does it take to adopt extremist political behavior? How does it compare to moderate behavior? Do online users need to be more or less persuaded in order to express extremism? 
+
+### Complex contagion
+Modeling political behavior with complex contagion is suitable to answer these questions. Complex contagion describes a learning process in which an agent requires \textit{social reinforcement} to adopt a behavior (Centola and Macy 2007). In order words, an individual adopts a behavior after multiple individuals in their social network already adopted this behavior. This process follows a logic of hearding, where an agent requires other agents to approve of the behavior in order to legitimize and adopt it. 
+
+An important assumption required under complex contagion models is that the adoption of behavior is \textit{risky} (Fink et al. 2016). Given the risk associated to adoption, the agent requires social reinforcement to adopt. The assumption of risk is presents a puzzle for my theory. My theory posits that extremist content is more persuasive that moderate content. To confirm this expectation, I expect online users to require less exposure to adopt extremist content compared to moderate content. 
+
+The assumption of risk in complex contagion thus presents a puzzle when applied in my theory. My empirical expectation that extremist adoption is \textit{less} risky than adopting moderate behavior is indeed counterintuitive. Theoretically, we should expect extremist behavior to be considered as more \textit{risky} to adopt relative to moderate behavior. I argue that extremist behavior is more persuasive than moderate behavior, reducing the risk associated to adoption. Moreoever, the process of adopting political behavior is done incrementally. A moderate user will not suddenly adopt extremist behavior. Moderates will progressively adopt more extreme behaviors through time. This progression towards the extreme, I argue, is more likely than the progression towards moderate politics. With this logic, the lower risk associated to extremist behavior adoption is theoretically sound. 
+
+Empirically, I demonstrate using complex contagion that extremist behavior requires less exposure to adopt relative to other types of political behavior. My hypothesis is that holding exposure constant, users on Twitter are more likely to adopt extremist behavior than moderate behavior. 
 
 
 ### Exposure and adoption 
