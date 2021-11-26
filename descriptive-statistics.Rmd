@@ -46,7 +46,7 @@ In this project, I use an explicit measure of complex contagion. As with the imp
 Following Fink et al. (2016), I use hashtags as a measure of adoption. My goal is to measure how many exposures to #qanon is required \textit{before} a user authors a tweet using #qanon. This hashtag is meant to conceptualize extremist behavior. I consider users who use #qanon in a tweets as adopting extremist political behavior. Furthermore, I consider users exposed to #qanon when they retweet, quote tweet or reply to a tweet using #qanon. 
 
 
-To model complex contagion, I count how many times a user was exposed to #qanon before using the hashtag. Out of the 67,181,551 tweets posted in June 2020 related to the US Presidential election, 351,108 tweets contained #qanon, authored from 83,867 unique users. Out of these tweets, only 4024 tweets were original, meaning that 4024 users used #qanon in an original tweet and adopted extremist behavior. 
+To model complex contagion, I count how many times a user was exposed to #qanon before using the hashtag. Out of the 67,181,551 tweets posted in June 2020 related to the US Presidential election, 351,108 tweets contained #qanon, authored from 83,867 unique users. Out of these tweets, only 4024 tweets were original, meaning that 4024 users used #qanon in an original tweet and adopted extremist behavior. I filter these tweets for users with ideal points larger than 0, which denotes Republicans (Barbera 2015). 
 
 Out of these 4024 users, only 1624 users were exposed to #qanon prior to adopting the behavior. This means that 2400 users in the sample used #qanon without prior exposure. 
 
@@ -68,6 +68,22 @@ source('02-adoption_threshold.R')
 qanon_exposed_adopters <- exposed_adopters(qanon)
 qanon_adopters <- adopters(qanon)
 
+obamagate_exposed_adopters <- exposed_adopters(obamagate)
+obamagate_adopters <- adopters(obamagate)
+
+trump2020_exposed_adopters <- exposed_adopters(trump2020)
+trump2020_adopters <- adopters(trump2020)
+
+
+wwg1wga_exposed_adopters <- exposed_adopters(wwg1wga)
+wwg1wga_adopters <- adopters(wwg1wga)
+
+
+whitelivesmatter_exposed_adopters <- exposed_adopters(whitelivesmatter)
+whitelivesmatter_adopters <- adopters(whitelivesmatter)
+
+
+
 
 # -------  Plotting with reduced data, where 100+ is in one category
 df_adopted_reduced <- df_adopters
@@ -77,16 +93,48 @@ df_adopted_reduced_exposed <- df_adopted_reduced[df_adopted_reduced$n != 0, ]
 ```
 
 
+First, let's take a look at some descriptive statistics about the data I collected.
 
-First, we can plot the density distribution of the number of exposures before adoption. This includes users who require 0 exposures, which represent 60% of the sample. 
+
+
+The number of exposed adopters is the key statistic to appreciate the persuasiveness of extremist behavior. This statistic computes the number of users who need to be persuaded \textit{and} got persuaded. I assume they needed persuasion because they adopted only after being exposed to the behavior. The assumptions lies in that users needed to see the behavior on Twitter before adopting. Otherwise they would have adopted without requiring exposure. 
+
+
+
+
+
+
+
+We can plot the density distribution of the number of exposures before adoption. This includes users who require 0 exposures, which represent 60% of the sample. 
 ```{r, echo = FALSE,  warning=F}
-ggplot(data = df_adopters, 
-       aes(x = n, fill = 'Red')) + 
-  geom_density(alpha=0.3) + 
-  ggtitle("Density plot of Tweet exposures before adopting #qanon") + 
-  xlab('Exposures to #Qanon') + ylab("Density") + 
-  theme_bw() + 
-  guides(fill = FALSE) 
+ggplot(data = trump2020_adopters,
+       aes(x = log(n), fill = 'Red')) +
+  geom_density(alpha=0.3) +
+  ggtitle("Density plot of Tweet exposures before adopting #qanon") +
+  xlab('Log Exposures to #Qanon') + ylab("Density") +
+  theme_bw() +
+  guides(fill = FALSE)
+
+
+
+ggplot(data = trump2020_exposed_adopters,
+       aes(x = log(n), fill = 'Red')) +
+  geom_density(alpha=0.3) +
+  ggtitle("Density plot of Tweet exposures before adopting #qanon") +
+  xlab('Log Exposures to #Qanon') + ylab("Density") +
+  theme_bw() +
+  guides(fill = FALSE)
+
+
+ggplot() +
+  geom_density(aes(x = log(n), fill = "Qanon"), alpha = .2, data = qanon_adopters) +
+  geom_density(aes(x = log(n), fill = "Obamagate"), alpha = .2, data = obamagate_adopters) +
+  geom_density(aes(x = log(n), fill = "Whitelivesmatter"), alpha = .2, data = whitelivesmatter_adopters) +
+  scale_fill_manual(name = "Hashtag", values = c(Qanon = "red", Obamagate = "green", Whitelivesmatter = "blue")) + 
+  ggtitle("Density plot of Tweet exposures before adopting hashtag") +
+  xlab('Log exposures to #Qanon') + ylab("Density") + 
+  theme_bw()
+  
 ```
 
 

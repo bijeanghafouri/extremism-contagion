@@ -37,7 +37,7 @@ clean_tweets <- function(x){
     str_trim("both")
 }
 
-adoption_threshold <- function(tweets, hashtag){
+adoption_threshold <- function(tweets, hashtag, party){
   tweets <- read_csv(`tweets`)
   # if hashtag contains 'qanon', 1 if not 0 (should be all 1)
   tweets$hashtag_qanon <- ifelse(grepl(`hashtag`, tweets$hashtag), 1, 0)
@@ -95,6 +95,13 @@ adoption_threshold <- function(tweets, hashtag){
   # Remove unnecessary data
   rm(exposure_count, exposures, joined_df, temp, times)
   
+  # filter based on ideology
+  if(party == 'republican'){
+    tweets <- tweets %>% filter(theta > 0)
+  } else {
+    tweets <- tweets %>% filter(theta < 0.001)
+  }
+  
   # return
   return(tweets)
 }
@@ -118,3 +125,31 @@ adopters <- function(data){
   return(df_adopters)
 }
 
+
+# descriptives for one dataset
+desc <- function(dataset){
+  # statistics
+  n <- nrow(dataset)
+  unique_users <- length(unique(dataset$screen_name))
+  adopters <- nrow(adopters(dataset))
+  adopters_exposed <- nrow(exposed_adopters(dataset))
+  sole_adopters <- adopters - adopters_exposed
+  mean_exposures <- round(mean(exposed_adopters(dataset)$n))
+  
+  # return
+  vec <- c(n, unique_users, adopters, adopters_exposed, sole_adopters, mean_exposures)
+  return(vec)
+}
+
+
+# 
+datasets <- list(qanon, trump2020)
+# apply description function on datasets
+ex <- lapply(datasets, desc)
+df <- do.call(rbind.data.frame, ex)
+# rename columns
+names(df) <- c('n', 'unique_users', 'adopters', 'adopters_exposed', 'sole_adopters', 'mean_exposures')
+
+
+
+# put describes of all datasets in one table
