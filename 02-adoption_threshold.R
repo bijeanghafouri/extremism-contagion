@@ -1,10 +1,10 @@
 # Adoption threshold with retweet graph 
 # Read data
-setwd(here())
 #source('01-read_data.R')
 
 # Import data if collected
 source('00-setup.R')
+setwd(here())
 
 # Republican hashtags ------------------------------------- 
 # qanon 
