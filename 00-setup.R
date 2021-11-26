@@ -1,6 +1,6 @@
 # Packages
 library(pacman)
-p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer)
+p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer, xtable)
 
 # --------------------------- Functions  --------------------------- 
 # Read data

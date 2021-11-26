@@ -58,7 +58,25 @@ It is important to mention that I do not measure exposures to #qanon after the f
 
 
 # Results
-First, let's take a look at some descriptive statistics about the data on Republican hashtags I collected.
+My hypothesis is that extremist hashtags are more likely to adopt than moderate hashtags. To confirm my expectation, users should require less exposures to extremist hashtags before adopting extremist behavior relative to moderate hashtags. 
+
+
+First, let's take a look at some descriptive statistics about the data on Republican hashtags I collected. This table presents different information. The first column represents the number tweets used the hashtag. Surprisingly, the extremist hashtags #qanon, #obamagate and #wwg1wga were used by Republican Twitter users significantly more than the moderate hashtag #trump2020. 
+
+Let's look at the #trump2020 more in detail. Out of the 12,506 users who engaged in the hashtag (original, reply, retweet or quoted), 3849 users authored a tweet with the hashtag (original and reply). This means that 30.8% of all users who engaged with #trump2020 adopted the behavior. In the fifth column, we see the number of users who required prior exposure to #trump2020 before adopting the behavior. Out of all users who authored a tweet with #trump2020, this represents only 3.95%. In other words, 96.1% of users who used #trump2020 were never previously exposed to the tweet. 
+
+To understand persuasion effects, we need to look into the behavior of these 3.95% of users who required exposure. These users will tell us more on what is required for them to use #trump2020. The 'mean exposures' column indicates the average number of exposures users needed before tweeting #trump2020. This excludes sole adopters. We see that users require on average 1 exposure before adopting the behavior. In other words, users will author a tweet, either in the form of an original tweet or reply, after retweeting or quoting a tweet with #trump2020 only once. 
+
+The mean number of exposures before using #trump2020, a behavior I consider to be moderately Republican, is low. To confirm my hypothesis, the number of exposures before adoption for the other extremist hashtags should be less than 1.
+
+This is not the case. In fact, the mean number of exposures for extremist hashtags varies between 3 and 5. I exclude #stopthesteal before of the low sample size. I show that extremist hashtags require significantly more persuasion attempts to adopt the behavior than a moderate hashtag. 
+
+We also see that the mean ideal point for users who engaged with #trump2020 is lower relative to extremist hashtags. In others, users who engage with #trump2020 are more moderate than users using extremist hashtags. This confirms my expectation of the nature of these hashtags: authoring a tweet with #trump2020 is an indication of moderate behavior, while authoring a tweet with what I identify as extremist hashtags is an indication of extremist behavior. We observe a similar tendency with users who required exposure before adopting and users who did not require exposure before adopting. Users who authored a tweet with #trump2020, who authored a tweet with #trump2020 after being exposed and who authored a tweet with #trump2020 without prior exposure are more moderate than other users. 
+
+
+
+
+
 ```{r, message = F, warning=F, include = F}
 source('02-adoption_threshold.R')
 datasets <- list('trump2020' = trump2020, 'qanon' = qanon, 'obamagate' = obamagate, 'wwg1wga' = wwg1wga, 'whitelivesmatter' = whitelivesmatter, 'stopthesteal' = stopthesteal)
@@ -66,13 +84,35 @@ republican_descriptives <- desc_table(datasets)
 republican_descriptives
 ```
 
-
-
-Next, let's look at the Democrat hashtags
 ```{r}
+xtable(republican_descriptives)
+```
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlrrrrrrrrrr}
+  \hline
+ & hashtag & n & unique users & adopters & adopters exposed & sole adopters & mean exposures & mean theta & theta\_adopters & theta\_exposed\_adopters & theta\_sole\_adopters \\ 
+  \hline
+1 & trump2020 & 20490.00 & 12506.00 & 3849.00 & 152.00 & 3697.00 & 1.00 & 2.69 & 2.40 & 2.59 & 2.39 \\ 
+  2 & qanon & 223754.00 & 59489.00 & 5100.00 & 1558.00 & 3542.00 & 4.00 & 2.90 & 2.64 & 2.78 & 2.57 \\ 
+  3 & obamagate & 190058.00 & 60834.00 & 6901.00 & 1511.00 & 5390.00 & 3.00 & 2.93 & 2.75 & 2.87 & 2.72 \\ 
+  4 & wwg1wga & 359369.00 & 79835.00 & 10934.00 & 3725.00 & 7209.00 & 5.00 & 2.92 & 2.78 & 2.87 & 2.73 \\ 
+  5 & whitelivesmatter & 9268.00 & 396.00 & 108.00 & 4.00 & 104.00 & 5.00 & 1.76 & 2.21 & 2.55 & 2.20 \\ 
+  6 & stopthesteal & 1168.00 & 743.00 & 29.00 & 5.00 & 24.00 & 1.00 & 2.87 & 2.76 & 2.93 & 2.73 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+
+
+Next, let's look at the Democrat hashtags. 
+```{r, message = F, warning=F, include = F}
 datasets <- list('boycottgoya' = boycottgoya, 'tre45on' = tre45on, 'blacklivesmatter' = blacklivesmatter, 'blm' = blm, 'acab' = acab, 'abolishthepolice' = abolishthepolice, 'defundthepolice' = defundthepolice, 'trumpvirus' = trumpvirus, 'whitesupremacy' = whitesupremacy, 'biden2020' = biden2020) 
 democrat_descriptives <- desc_table(datasets)
 democrat_descriptives
+
+
+cor(democrat_descriptives$`mean exposures`, democrat_descriptives$theta_exposed_adopters)
 ```
 
 
