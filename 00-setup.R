@@ -2,7 +2,8 @@
 library(pacman)
 p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer)
 
-# Functions
+# --------------------------- Functions  --------------------------- 
+# Read data
 read_tweets <- function(x){
   require(data.table)
   df <- data.table::fread(x, # name of file
@@ -15,6 +16,7 @@ read_tweets <- function(x){
                                    rt_hashtag = 'character')) 
 }
 
+# Clean data
 clean_tweets <- function(x){
   x %>%
     # Remove URLs
@@ -37,10 +39,11 @@ clean_tweets <- function(x){
     str_trim("both")
 }
 
+# Compute adoption columns
 adoption_threshold <- function(tweets, hashtag, party){
   tweets <- read_csv(`tweets`)
   # if hashtag contains 'qanon', 1 if not 0 (should be all 1)
-  tweets$hashtag_qanon <- ifelse(grepl(`hashtag`, tweets$hashtag), 1, 0)
+  #tweets$hashtag_qanon <- ifelse(grepl(`hashtag`, tweets$hashtag), 1, 0)
   
   # if tweet is original/reply, 1 if not 0. This means 1 if user adopts behavior, 0 otherwise.
   tweets$original <- ifelse(grepl('original', tweets$tweet_type), 1, 0)
@@ -106,6 +109,7 @@ adoption_threshold <- function(tweets, hashtag, party){
   return(tweets)
 }
 
+# Filter data for adopters who were previously exposed
 exposed_adopters <- function(data){
   unique_users <- data %>% 
     distinct(screen_name, .keep_all = TRUE)
@@ -116,6 +120,7 @@ exposed_adopters <- function(data){
   return(df_adopters_exposed)
 }
 
+# Filter data for all adopters
 adopters <- function(data){
   unique_users <- data %>% 
     distinct(screen_name, .keep_all = TRUE)
@@ -125,7 +130,6 @@ adopters <- function(data){
   return(df_adopters)
 }
 
-
 # descriptives for one dataset
 desc <- function(dataset){
   # statistics
@@ -133,23 +137,33 @@ desc <- function(dataset){
   unique_users <- length(unique(dataset$screen_name))
   adopters <- nrow(adopters(dataset))
   adopters_exposed <- nrow(exposed_adopters(dataset))
-  sole_adopters <- adopters - adopters_exposed
+  sole_adopters <- nrow(adopters(dataset)[!adopters(dataset)$screen_name %in% exposed_adopters(dataset)$screen_name, ])
   mean_exposures <- round(mean(exposed_adopters(dataset)$n))
+  mean_theta <- mean(dataset$theta, na.rm = T)
+  theta_adopters <- mean(adopters(dataset)$theta)
+  theta_exposed_adopters <- mean(exposed_adopters(dataset)$theta)
+  theta_sole_adopters <- mean(adopters(dataset)[!adopters(dataset)$screen_name %in% exposed_adopters(dataset)$screen_name, ]$theta)
   
+    
   # return
-  vec <- c(n, unique_users, adopters, adopters_exposed, sole_adopters, mean_exposures)
+  vec <- c(n, unique_users, adopters, adopters_exposed, sole_adopters, mean_exposures, mean_theta, theta_adopters, theta_exposed_adopters, theta_sole_adopters)
   return(vec)
 }
 
+# create table of summary statistics 
+desc_table <- function(datasets){
+  ex <- lapply(datasets, desc)
+  df <- do.call(rbind.data.frame, ex)
+  df <- tibble(df)
+  # rename columns
+  names(df) <- c('n', 'unique users', 'adopters', 'adopters exposed', 'sole adopters', 'mean exposures', 'mean theta', 'theta_adopters', 'theta_exposed_adopters', 'theta_sole_adopters')
+  # add hashtag column 
+  df$hashtag <- names(datasets)
+  # place hashtag column in front
+  df <- df[,c(11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)]
+  return(df)
+}
 
-# 
-datasets <- list(qanon, trump2020)
-# apply description function on datasets
-ex <- lapply(datasets, desc)
-df <- do.call(rbind.data.frame, ex)
-# rename columns
-names(df) <- c('n', 'unique_users', 'adopters', 'adopters_exposed', 'sole_adopters', 'mean_exposures')
 
 
 
-# put describes of all datasets in one table

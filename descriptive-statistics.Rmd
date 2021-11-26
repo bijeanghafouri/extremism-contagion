@@ -57,13 +57,36 @@ It is important to mention that I do not measure exposures to #qanon after the f
 
 
 
+# Results
+First, let's take a look at some descriptive statistics about the data on Republican hashtags I collected.
+```{r, message = F, warning=F, include = F}
+source('02-adoption_threshold.R')
+datasets <- list('trump2020' = trump2020, 'qanon' = qanon, 'obamagate' = obamagate, 'wwg1wga' = wwg1wga, 'whitelivesmatter' = whitelivesmatter, 'stopthesteal' = stopthesteal)
+republican_descriptives <- desc_table(datasets)
+republican_descriptives
+```
+
+
+
+Next, let's look at the Democrat hashtags
+```{r}
+datasets <- list('boycottgoya' = boycottgoya, 'tre45on' = tre45on, 'blacklivesmatter' = blacklivesmatter, 'blm' = blm, 'acab' = acab, 'abolishthepolice' = abolishthepolice, 'defundthepolice' = defundthepolice, 'trumpvirus' = trumpvirus, 'whitesupremacy' = whitesupremacy, 'biden2020' = biden2020) 
+democrat_descriptives <- desc_table(datasets)
+democrat_descriptives
+```
+
+
+
+
+The number of exposed adopters is the key statistic to appreciate the persuasiveness of extremist behavior. This statistic computes the number of users who need to be persuaded \textit{and} got persuaded. I assume they needed persuasion because they adopted only after being exposed to the behavior. The assumptions lies in that users needed to see the behavior on Twitter before adopting. Otherwise they would have adopted without requiring exposure. 
+
 
 
 # Data visualization  
 Here, I show some density plots that demonstrate my preliminary results. 
 
+
 ```{r, message = F, warning=F, include = F}
-source('02-adoption_threshold.R')
 
 qanon_exposed_adopters <- exposed_adopters(qanon)
 qanon_adopters <- adopters(qanon)
@@ -92,12 +115,6 @@ df_adopted_reduced_exposed <- df_adopted_reduced[df_adopted_reduced$n != 0, ]
 
 ```
 
-
-First, let's take a look at some descriptive statistics about the data I collected.
-
-
-
-The number of exposed adopters is the key statistic to appreciate the persuasiveness of extremist behavior. This statistic computes the number of users who need to be persuaded \textit{and} got persuaded. I assume they needed persuasion because they adopted only after being exposed to the behavior. The assumptions lies in that users needed to see the behavior on Twitter before adopting. Otherwise they would have adopted without requiring exposure. 
 
 
 
