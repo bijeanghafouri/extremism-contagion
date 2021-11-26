@@ -63,28 +63,17 @@ It is important to mention that I do not measure exposures to #qanon after the f
 Here, I show some density plots that demonstrate my preliminary results. 
 
 ```{r, message = F, warning=F, include = F}
-library(pacman)
-p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer)
-tweets <- read_csv("tweets-qanon-clean.csv")
+source('02-adoption_threshold.R')
 
-unique_users <- tweets %>% 
-  distinct(screen_name, .keep_all = TRUE)
-
-df_adopters <- unique_users[unique_users$tweet_type == 'original', ]
-df_adopters[, 'n'][is.na(df_adopters[, 'n'])] <- 0
-nrow(df_adopters)
-
-df_adopters_exposed <- df_adopters[!df_adopters$n == 0, ]
-nrow(df_adopters_exposed)
-nrow(df_adopters[df_adopters$n == 0, ])
-mean(df_adopters_exposed$n)
-mean(df_adopters$n)
+qanon_exposed_adopters <- exposed_adopters(qanon)
+qanon_adopters <- adopters(qanon)
 
 
 # -------  Plotting with reduced data, where 100+ is in one category
 df_adopted_reduced <- df_adopters
 df_adopted_reduced[, 'n'][df_adopted_reduced[, 'n'] > 100, ] <- 0
 df_adopted_reduced_exposed <- df_adopted_reduced[df_adopted_reduced$n != 0, ]  
+
 ```
 
 

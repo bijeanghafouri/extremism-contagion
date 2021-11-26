@@ -8,3 +8,6 @@ data/
 
 # Session Data files
 .RData
+
+# data
+.tweets_july2020_total_ideology.csv

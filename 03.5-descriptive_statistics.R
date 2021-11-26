@@ -5,8 +5,8 @@ setwd(here())
 #source('02-adoption_threshold.R')
 
 # Import data if collected
-source('00-setup.R')
-tweets <- read.csv("tweets-qanon-clean.csv")
+source('02-adoption_threshold.R')
+#tweets <- read_csv("tweets-qanon-clean.csv")
 
 # ----------- Compute statistics ------------------
 # Dataframe with unique users only, where One row = one user. 
@@ -15,8 +15,8 @@ unique_users <- tweets %>%
 
 
 # Number of adopters, i.e. number of users who tweeted an original tweets with #qanon
-df_adopters <- unique_users[unique_users$tweet_type == 'original', ]
-# In the `n` column, when its NA that is user was exposed. If there is a number, it is equal to 1 or greater and means they were exposed once or more. Recode NAs into 0, then computer number of 0s in `n`  column. 
+df_adopters <- unique_users[unique_users$original == 1, ]
+# In the `n` column, when its NA that is user was exposed. If there is a number, it is equal to 1 or greater and means they were exposed once or more. Recode NAs into 0, then compute number of 0s in `n` column. 
 df_adopters[, 'n'][is.na(df_adopters[, 'n'])] <- 0
 nrow(df_adopters)
 
@@ -41,32 +41,35 @@ mean(df_adopters$n)
 
 
 # ------- Graph logarithm curve 
-# Compute frequency table 
-frequency_table <- as.data.frame(table(df_adopters$n))
-colnames(frequency_table)[1] <- 'Exposures'
-colnames(frequency_table)[2] <- 'Frequency'
-frequency_table
+# # Compute frequency table 
+# frequency_table <- as.data.frame(table(df_adopters$n))
+# colnames(frequency_table)[1] <- 'Exposures'
+# colnames(frequency_table)[2] <- 'Frequency'
+# frequency_table
 
 
 
 
 # Density plot 
 ggplot(data = df_adopters, 
-       aes(x = n, fill = 'Red')) + 
+       aes(x = log(n), fill = 'Red')) + 
   geom_density(alpha=0.3) + 
   ggtitle("Density plot of Tweet exposures before adopting #qanon") + 
-  xlab('Exposures to #Qanon') + ylab("Density") + 
+  xlab('Log Exposures to #Qanon') + ylab("Density") + 
   theme_bw() + 
   guides(fill = FALSE) # remove title
 
+
+
 # Density plot without those without exposure 
 ggplot(data = df_adopters_exposed, 
-       aes(x = n, fill = 'Red')) + 
+       aes(x = log(n), fill = 'Red')) + 
   geom_density(alpha=0.3) + 
   ggtitle("Excluding sole adopters - Density plot of Tweet exposures before adopting #qanon") + 
-  xlab('Exposures to #Qanon') + ylab("Density") + 
+  xlab('Log Exposures to #Qanon') + ylab("Density") + 
   theme_bw() + 
   guides(fill = FALSE) # remove title
+
 
 
 

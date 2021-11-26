@@ -1,61 +1,37 @@
 # Adoption threshold with retweet graph 
-# ------------------ Setup 
 # Read data
 setwd(here())
-source('01-read_data.R')
+#source('01-read_data.R')
 
-# if hashtag contains 'qanon', 1 if not 0 (should be all 1)
-tweets$hashtag_qanon <- ifelse(grepl('qanon', tweets$hashtag), 1, 0)
+# Import data if collected
+source('00-setup.R')
 
-# if tweet is original, 1 if not 0 
-tweets$original <- ifelse(grepl('original', tweets$tweet_type), 1, 0)
-
-# Identify time of first use of hashtag (original tweet)
-# Convert time to epoch
-tweets$date <- as.POSIXct(tweets$date, format = "%a %b %d %H:%M:%S %z %Y", tz = "GMT")
-tweets$date <- lubridate::as_datetime(tweets$date)
-tweets$date <- as.integer(tweets$date)
-
-# find earliest tweet when original (first adoption)
-times <- tweets %>% 
-  group_by(screen_name) %>%
-  filter(original == 1) %>% 
-  summarise(adoption_time = min(date, na.rm= TRUE))
-
-joined_df <- merge(times, tweets, by = 'screen_name', all.y = T)
+# qanon 
+data <- 'data/tweets-qanon-clean_v2.csv'
+qanon <- adoption_threshold(data, 'qanon')
 
 
-# find how many exposures before adoption 
-# find tweets that were before adoption for users who adopted. This drops rows where original=1, so we have to make sure to add them back at the end. 
-temp <- joined_df %>% 
-  filter(original == 0) %>% 
-  mutate(time_difference = date - adoption_time)
+# stopthesteal
+data <- 'data/tweets-stopthesteal-clean.csv'
+stopthesteal <- adoption_threshold(data, 'stopthesteal')
 
-# if before, 1, ifelse 0
-temp$difference <- ifelse(temp$time_difference < 0, 1, 0)
 
-# count number of exposures before adoption 
-exposure_count <- temp %>% 
-  filter(difference == 1) %>% 
-  group_by(screen_name) %>% 
-  count()
+# whitelivesmatter
+data <- 'data/tweets-whitelivesmatter-clean.csv'
+whitelivesmatter <- adoption_threshold(data, 'whitelivesmatter')
 
-exposures <- merge(temp, exposure_count, by = 'screen_name', all.x = T)
 
-# Now, the exposures df is missing rows where original=1. We add them back here
-# add columns to joined_df that are in the exposures df
-joined_df$time_difference <- NA
-joined_df$difference <- NA
-joined_df$n <- NA
-joined_df <- joined_df %>% filter(original == 1)
-tweets <- rbind(joined_df, exposures)
+# wwg1wga
+data <- 'data/tweets-wwg1wga-clean.csv'
+wwg1wga <- adoption_threshold(data, 'wwg1wga')
 
-# assign values when tweet-type = original 
-tweets <- tweets %>% 
-  group_by(userid) %>% 
-  fill(n) %>% #default direction down
-  fill(n, .direction = "up")
 
-# Remove unnecessary data
-rm(exposure_count, exposures, joined_df, temp, times, cores, files, clean_tweets)
+# obamagate
+data <- 'data/tweets-obamagate-clean.csv'
+obamagate <- adoption_threshold(data, 'obamagate')
+
+
+# trump2020
+data <- 'data/tweets-trump2020-clean.csv'
+trump2020 <- adoption_threshold(data, 'trump2020')
 
