@@ -1,24 +1,11 @@
 ---
-title: Your awesome tile
-author: "Author one and Author Two"
-date: '`r format(Sys.time(), "%d %B, %Y")`'
+title: "Descriptive Statistics - POIR 613 Final Project"
+author: "Bijean Ghafouri"
+date: "11/11/2021"
 output:
-  bookdown::tufte_html2:
-    number_sections: no
-    toc: yes
-  bookdown::word_document2: null
-  bookdown::pdf_document2:
-    includes:
-      before_body: doc_prefix.tex
-      in_header: preamble.tex
-    keep_tex: yes
-    latex_engine: xelatex
-    number_sections: no
-    toc: no
-bibliography: path/to/ref.bib
-fontsize: 12pt
-link-citations: yes
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/global-ecology-and-biogeography.csl
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
