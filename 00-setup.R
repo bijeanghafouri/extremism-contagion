@@ -167,3 +167,136 @@ desc_table <- function(datasets){
 
 
 
+# create ideology plot 
+ideology_plot <- function(dataset){
+  # ------------------------------------------------------
+  # Function to create ideology density plot from dataset.
+  # Returns one plot 
+  # ------------------------------------------------------
+  
+  x <- na.omit(dataset$theta)
+  y <- density(na.omit(x), n = 2^12)
+  
+  plot <- ggplot(data.frame(x = y$x, y = y$y), aes(x,y)) + geom_line() + 
+    geom_segment(aes(xend = x, yend = 0, color = x)) + 
+    scale_color_gradient(low = 'dodgerblue2', high = 'firebrick2') +
+    labs(x = 'Ideology estimate', y = 'Density') + 
+    cowplot::theme_cowplot() + guides(color = FALSE)
+  
+  # return
+  return(plot)
+}
+
+# ridge ideology plots 
+ridges_plot_democrat <- function(x){
+  # Combine dataframes
+  acab_test <- acab
+  acab_test <- acab_test[, 'theta']
+  acab_test$hashtag <- 'acab'
+  
+  abolishthepolice_test <- abolishthepolice
+  abolishthepolice_test <- abolishthepolice_test[, 'theta']
+  abolishthepolice_test$hashtag <- 'abolishthepolice'
+  
+  biden2020_test <- biden2020
+  biden2020_test <- biden2020_test[, 'theta']
+  biden2020_test$hashtag <- 'biden2020'
+  
+  blacklivesmatter_test <- blacklivesmatter
+  blacklivesmatter_test <- blacklivesmatter_test[, 'theta']
+  blacklivesmatter_test$hashtag <- 'blacklivesmatter'
+  
+  blm_test <- blm
+  blm_test <- blm_test[, 'theta']
+  blm_test$hashtag <- 'blm'
+  
+  boycottgoya_test <- boycottgoya
+  boycottgoya_test <- boycottgoya_test[, 'theta']
+  boycottgoya_test$hashtag <- 'boycottgoya'
+  
+  defundthepolice_test <- defundthepolice
+  defundthepolice_test <- defundthepolice_test[, 'theta']
+  defundthepolice_test$hashtag <- 'defundthepolice'
+  
+  whitesupremacy_test <- whitesupremacy
+  whitesupremacy_test <- whitesupremacy_test[, 'theta']
+  whitesupremacy_test$hashtag <- 'whitesupremacy'
+  
+  tre45on_test <- tre45on
+  tre45on_test <- tre45on_test[, 'theta']
+  tre45on_test$hashtag <- 'tre45on'
+  
+  
+  trumpvirus_test <- trumpvirus
+  trumpvirus_test <- trumpvirus_test[, 'theta']
+  trumpvirus_test$hashtag <- 'trumpvirus'
+  
+  
+  df <- rbind(biden2020_test, acab_test, abolishthepolice_test, blacklivesmatter_test, blm_test, boycottgoya_test, defundthepolice_test, whitesupremacy_test, tre45on_test, trumpvirus_test)
+  
+  
+  library(ggridges)
+  library(ggplot2)
+  library(viridis)
+  library(hrbrthemes)
+  plot <- ggplot(df, aes(x = theta, y = hashtag, fill = ..x..)) +
+    geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+    scale_fill_viridis(name = "Ideal points", option = "C") +
+    labs(title = 'Ideal points of Democrat hashtags') +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+  
+  
+  return(plot)
+}
+ridges_plot_republican <- function(x){
+  # Combine dataframes
+  obamagate_test <- obamagate
+  obamagate_test <- obamagate_test[, 'theta']
+  obamagate_test$hashtag <- 'obamagate'
+  
+  qanon_test <- qanon
+  qanon_test <- qanon_test[, 'theta']
+  qanon_test$hashtag <- 'qanon'
+  
+  stopthesteal_test <- stopthesteal
+  stopthesteal_test <- stopthesteal_test[, 'theta']
+  stopthesteal_test$hashtag <- 'stopthesteal'
+  
+  trump2020_test <- trump2020
+  trump2020_test <- trump2020_test[, 'theta']
+  trump2020_test$hashtag <- 'trump2020'
+  
+  whitelivesmatter_test <- whitelivesmatter
+  whitelivesmatter_test <- whitelivesmatter_test[, 'theta']
+  whitelivesmatter_test$hashtag <- 'whitelivesmatter'
+  
+  wwg1wga_test <- wwg1wga
+  wwg1wga_test <- wwg1wga_test[, 'theta']
+  wwg1wga_test$hashtag <- 'wwg1wga'
+  
+  df <- rbind(wwg1wga_test, whitelivesmatter_test, trump2020_test, stopthesteal_test, qanon_test, obamagate_test)
+  
+  
+  library(ggridges)
+  library(ggplot2)
+  library(viridis)
+  library(hrbrthemes)
+  plot <- ggplot(df, aes(x = theta, y = hashtag, fill = ..x..)) +
+    geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+    scale_fill_viridis(name = "Ideal points", option = "C") +
+    labs(title = 'Ideal points of Republican hashtags') +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+  
+  
+  return(plot)
+}

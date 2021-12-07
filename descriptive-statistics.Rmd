@@ -25,7 +25,7 @@ To answer these questions, I use a dataset published by Chen, Deb and Ferrara (2
 
 
 ### Complex contagion
-Modeling political behavior with complex contagion is suitable to understand the conditions under which agents adopt extremist behaviors. Complex contagion describes a learning process in which agents require \textit{social reinforcement} to adopt behavior (Centola and Macy 2007). In order words, an individual adopts a behavior after multiple individuals in their social network already adopted this behavior. This process follows a logic of hearding, where an agent requires other agents to approve the behavior to gain legitimaticy. 
+Modeling political behavior with complex contagion is suitable to understand the conditions under which agents adopt extremist behaviors. Complex contagion describes a learning process in which agents require \textit{social reinforcement} to adopt behavior (Centola and Macy 2007). In order words, an individual adopts a behavior after multiple individuals in their social network already adopted this behavior. This process follows a logic of hearding, where an agent requires other agents to approve the behavior to gain legitimacy. 
 
 
 Using complex contagion, I demonstrate that extremist behavior adoption requires less exposure relative to other types of political behavior. I expect that when holding exposure constant, Twitter users are more likely to adopt extremist rather than moderate behavior. 
@@ -80,11 +80,34 @@ We also see that the mean ideal point for users who engaged with #trump2020 is l
 ```{r, message = F, warning=F, include = F}
 source('02-adoption_threshold.R')
 datasets <- list('trump2020' = trump2020, 'qanon' = qanon, 'obamagate' = obamagate, 'wwg1wga' = wwg1wga, 'whitelivesmatter' = whitelivesmatter, 'stopthesteal' = stopthesteal)
-republican_descriptives <- desc_table(datasets)
-republican_descriptives
+
 ```
 
+
+
+
+First, I show the distribution of ideal points of users who either adopted or exposed to each tweet. Specifically, I compare the distribution between the moderate hashtag and the extremist hashtags. 
 ```{r}
+# Ideology plot 
+democrat_hashtag_plots <- ridges_plot_democrat()
+democrat_hashtag_plots
+
+republican_hashtag_plots <- ridges_plot_republican()
+republican_hashtag_plots
+```
+
+
+
+
+
+
+
+
+Now, let's look at the results for the threshold parameters. 
+
+```{r}
+republican_descriptives <- desc_table(datasets)
+republican_descriptives
 xtable(republican_descriptives)
 ```
 \begin{table}[ht]
