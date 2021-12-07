@@ -1,4 +1,9 @@
 # HPC code
+# ----------------------------------------------------------------
+# This code ready to run directly on the HPC cluster. It gets raw data files
+# from Emily's (ISI) HPC account and filters based on hashtags I need. 
+# The code returns .csv files that contain tweets with each specified hashtag
+# ----------------------------------------------------------------
 
 # Read emily's data, and merge with ideal points
 library(tidyverse)

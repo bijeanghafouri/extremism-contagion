@@ -164,9 +164,6 @@ desc_table <- function(datasets){
   return(df)
 }
 
-
-
-
 # create ideology plot 
 ideology_plot <- function(dataset){
   # ------------------------------------------------------
