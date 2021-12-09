@@ -3,8 +3,8 @@
 #source('01-read_data.R')
 
 # Import data if collected
-source('00-setup.R')
-setwd(here())
+source('/Users/bijeanghafouri/Code/extremist-contagion/00-setup.R')
+#setwd(here())
 
 # Republican hashtags ------------------------------------- 
 # qanon 

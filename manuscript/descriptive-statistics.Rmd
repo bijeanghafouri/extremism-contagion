@@ -78,9 +78,8 @@ We also see that the mean ideal point for users who engaged with #trump2020 is l
 
 
 ```{r, message = F, warning=F, include = F}
-source('02-adoption_threshold.R')
-datasets <- list('trump2020' = trump2020, 'qanon' = qanon, 'obamagate' = obamagate, 'wwg1wga' = wwg1wga, 'whitelivesmatter' = whitelivesmatter, 'stopthesteal' = stopthesteal)
-
+# setup 
+source('/Users/bijeanghafouri/Code/extremist-contagion/02-adoption_threshold.R')
 ```
 
 
@@ -106,36 +105,27 @@ republican_hashtag_plots
 Now, let's look at the results for the threshold parameters. 
 
 ```{r}
+datasets <- list('trump2020' = trump2020, 'qanon' = qanon, 'obamagate' = obamagate, 'wwg1wga' = wwg1wga, 'whitelivesmatter' = whitelivesmatter, 'stopthesteal' = stopthesteal)
+
 republican_descriptives <- desc_table(datasets)
 republican_descriptives
+
+# latex output 
 xtable(republican_descriptives)
 ```
-\begin{table}[ht]
-\centering
-\begin{tabular}{rlrrrrrrrrrr}
-  \hline
- & hashtag & n & unique users & adopters & adopters exposed & sole adopters & mean exposures & mean theta & theta\_adopters & theta\_exposed\_adopters & theta\_sole\_adopters \\ 
-  \hline
-1 & trump2020 & 20490.00 & 12506.00 & 3849.00 & 152.00 & 3697.00 & 1.00 & 2.69 & 2.40 & 2.59 & 2.39 \\ 
-  2 & qanon & 223754.00 & 59489.00 & 5100.00 & 1558.00 & 3542.00 & 4.00 & 2.90 & 2.64 & 2.78 & 2.57 \\ 
-  3 & obamagate & 190058.00 & 60834.00 & 6901.00 & 1511.00 & 5390.00 & 3.00 & 2.93 & 2.75 & 2.87 & 2.72 \\ 
-  4 & wwg1wga & 359369.00 & 79835.00 & 10934.00 & 3725.00 & 7209.00 & 5.00 & 2.92 & 2.78 & 2.87 & 2.73 \\ 
-  5 & whitelivesmatter & 9268.00 & 396.00 & 108.00 & 4.00 & 104.00 & 5.00 & 1.76 & 2.21 & 2.55 & 2.20 \\ 
-  6 & stopthesteal & 1168.00 & 743.00 & 29.00 & 5.00 & 24.00 & 1.00 & 2.87 & 2.76 & 2.93 & 2.73 \\ 
-   \hline
-\end{tabular}
-\end{table}
+
 
 
 
 Next, let's look at the Democrat hashtags. 
 ```{r, message = F, warning=F, include = F}
-datasets <- list('boycottgoya' = boycottgoya, 'tre45on' = tre45on, 'blacklivesmatter' = blacklivesmatter, 'blm' = blm, 'acab' = acab, 'abolishthepolice' = abolishthepolice, 'defundthepolice' = defundthepolice, 'trumpvirus' = trumpvirus, 'whitesupremacy' = whitesupremacy, 'biden2020' = biden2020) 
+datasets <- list('boycottgoya' = boycottgoya, 'tre45on' = tre45on, 'blacklivesmatter' = blacklivesmatter, 'blm' = blm, 'acab' = acab, 'abolishthepolice' = abolishthepolice, 'defundthepolice' = defundthepolice, 'trumpvirus' = trumpvirus, 'whitesupremacy' = whitesupremacy, 'biden2020' = biden2020)
+
 democrat_descriptives <- desc_table(datasets)
 democrat_descriptives
 
-
-cor(democrat_descriptives$`mean exposures`, democrat_descriptives$theta_exposed_adopters)
+# latex output 
+xtable(democrat_descriptives)
 ```
 
 
@@ -145,41 +135,20 @@ The number of exposed adopters is the key statistic to appreciate the persuasive
 
 
 
+
+
+
+
+
+
 # Data visualization  
 Here, I show some density plots that demonstrate my preliminary results. 
 
 
 ```{r, message = F, warning=F, include = F}
-
-qanon_exposed_adopters <- exposed_adopters(qanon)
-qanon_adopters <- adopters(qanon)
-
-obamagate_exposed_adopters <- exposed_adopters(obamagate)
-obamagate_adopters <- adopters(obamagate)
-
-trump2020_exposed_adopters <- exposed_adopters(trump2020)
-trump2020_adopters <- adopters(trump2020)
-
-
-wwg1wga_exposed_adopters <- exposed_adopters(wwg1wga)
-wwg1wga_adopters <- adopters(wwg1wga)
-
-
-whitelivesmatter_exposed_adopters <- exposed_adopters(whitelivesmatter)
-whitelivesmatter_adopters <- adopters(whitelivesmatter)
-
-
-
-
-# -------  Plotting with reduced data, where 100+ is in one category
-# df_adopted_reduced <- df_adopters
-# df_adopted_reduced[, 'n'][df_adopted_reduced[, 'n'] > 100, ] <- 0
-# df_adopted_reduced_exposed <- df_adopted_reduced[df_adopted_reduced$n != 0, ]  
-
+ridges_plot_republican_adoption()
+ridges_plot_democrat_adoption()
 ```
-
-
-
 
 
 
@@ -258,3 +227,138 @@ Finally, let us consider the same sample, but with users who again required at l
 #   theme_bw() + 
 #   guides(fill = FALSE)
 ```
+
+
+
+
+## Regression
+I estimate the effect of exposures on likelihood to adopt the behavior. The independent variable is a count of the number of exposures to the hashtag. I count these exposures regardless of whether the user adopted the hashtag. 
+The dependent variable is binary coded as 1 if the user adopts the behavior and 0 if not. 
+
+
+First, we need to clean and subset our dataframe where 1 row = 1 user and create our DV and IV columns
+```{r}
+# -------------------------------------- REPUBLICANS
+# --------- Make dataset regression ready
+# create list of dataframes
+dataframe_list_republican <- list(trump2020, obamagate, qanon, stopthesteal, whitelivesmatter, wwg1wga)
+
+# loop over dataframes with `regression_ready`, which create DV and IV columns
+ex <- lapply(dataframe_list_republican, regression_ready)
+# rename elements of list 
+names(ex) = c('trump2020', 'obamagate', 'qanon', 'stopthesteal', 'whitelivesmatter', 'wwg1wga')
+
+
+# unlist list of dataframes. This will overwrite previous dataframes with the dataframes in `ex` list
+invisible(lapply(names(ex),function(x) assign(x, ex[[x]],.GlobalEnv)))
+
+
+
+# -------------------------------------- DEMOCRATS
+# --------- Make dataset regression ready
+# create list of dataframes
+dataframe_list_democrat <- list(biden2020, acab, blm, blacklivesmatter, boycottgoya, tre45on, abolishthepolice, defundthepolice, trumpvirus, whitesupremacy)
+
+# loop over dataframes with `regression_ready`, which create DV and IV columns
+ex <- lapply(dataframe_list_democrat, regression_ready)
+# rename elements of list 
+names(ex) = c("biden2020","acab", 'blm', 'blacklivesmatter', 'boycottgoya', 'tre45on', 'abolishthepolice', 'defundthepolice', 'trumpvirus', 'whitesupremacy')
+
+
+# unlist list of dataframes. This will overwrite previous dataframes with the dataframes in `ex` list
+invisible(lapply(names(ex),function(x) assign(x, ex[[x]],.GlobalEnv)))
+```
+
+
+
+Before running regressions, let's look at the distribution of our IV and DV
+```{r}
+# Density plot of outcome and predictor 
+# Outcome: adopted
+
+
+# Predictor: total number of exposures 
+```
+
+
+
+Now, let's run regressions.
+```{r}
+# Run regression ---------
+# DV = `adopted`
+# IV = `total_exposures`
+
+models <- list(
+  "biden2020"     = lm(adopted ~ total_exposures + theta, biden2020),
+  "acab"     = lm(adopted ~ total_exposures + theta, acab),
+  "blacklivesmatter"     = lm(adopted ~ total_exposures + theta, blacklivesmatter),
+  "blm"     = lm(adopted ~ total_exposures + theta, blm),
+  "boycottgoya" = lm(adopted ~ total_exposures + theta, boycottgoya),
+  "tre45on" = lm(adopted ~ total_exposures + theta, tre45on),
+  "abolishthepolice" = lm(adopted ~ total_exposures + theta, abolishthepolice),
+  "defundthepolice" = lm(adopted ~ total_exposures + theta, defundthepolice),
+  "trumpvirus" = lm(adopted ~ total_exposures + theta, trumpvirus),
+  "whitesupremacy" = lm(adopted ~ total_exposures + theta, whitesupremacy)
+  )
+
+
+cm <- c( '(Intercept)' = 'Constant', 'total_exposures' = 'Exposures')
+cap <- 'Regression for Democrat hashtags'
+tab <- modelsummary(models, output = 'kableExtra',
+                stars = TRUE, 
+                coef_map = cm,
+                title = cap, gof_omit = 'IC|Log|Adj') %>% 
+  kable_classic_2(full_width = F) %>% row_spec(3, color = 'red')
+
+# Plot regression coefficients
+modelplot(models, coef_omit = 'Interc') +
+    labs(x = 'Coefficients', 
+         y = 'Exposure effect',
+         title = 'Effect of exposures on adoption likelihood',
+         caption = "Tweets related to the 2020 US Presidential Election in July 2020") +
+    scale_color_manual(values = wes_palette('Darjeeling1'))
+```
+
+
+
+
+
+
+
+Regression for republicans
+```{r}
+# Run regression ---------
+# DV = `adopted`
+# IV = `total_exposures`
+
+models <- list(
+  "trump2020"     = lm(adopted ~ total_exposures + theta, trump2020),
+  "obamagate"     = lm(adopted ~ total_exposures + theta, obamagate),
+  "qanon"     = lm(adopted ~ total_exposures + theta, qanon),
+  "stopthesteal"     = lm(adopted ~ total_exposures + theta, stopthesteal),
+  "whitelivesmatter" = lm(adopted ~ total_exposures + theta, whitelivesmatter),
+  "wwg1wga" = lm(adopted ~ total_exposures + theta, wwg1wga)
+  )
+
+
+cm <- c( '(Intercept)' = 'Constant', 'total_exposures' = 'Exposures', 'theta' = 'ideology')
+cap <- 'Regression for Republican hashtags'
+tab <- modelsummary(models, output = 'kableExtra',
+                stars = TRUE, 
+                coef_map = cm,
+                title = cap, gof_omit = 'IC|Log|Adj') %>% 
+  kable_classic_2(full_width = F) %>% row_spec(3, color = 'red')
+tab
+
+
+# Plot regression coefficients
+modelplot(models, coef_omit = 'Interc') +
+    labs(x = 'Coefficients', 
+         y = 'Exposure effect',
+         title = 'Effect of exposures on adoption likelihood',
+         caption = "Tweets related to the 2020 US Presidential Election in July 2020") +
+    scale_color_manual(values = wes_palette('Darjeeling1'))
+
+
+```
+

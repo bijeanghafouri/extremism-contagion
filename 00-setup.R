@@ -1,6 +1,7 @@
 # Packages
 library(pacman)
-p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer, xtable)
+p_load(data.table, tidyverse, igraph, here, parallel, RColorBrewer, xtable, modelsummary, kableExtra)
+setwd('/Users/bijeanghafouri/Code/extremist-contagion')
 
 # --------------------------- Functions  --------------------------- 
 # Read data
@@ -161,6 +162,17 @@ desc_table <- function(datasets){
   df$hashtag <- names(datasets)
   # place hashtag column in front
   df <- df[,c(11, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)]
+  
+  
+  # flip rows into column
+  options(scipen = 999) # remove scientific notation
+  options(digits = 3)
+  df <- as.data.frame(t(df))
+  names(df) <- as.matrix(df[1, ])
+  df <- df[-1, ]
+  df[] <- lapply(df, function(x) type.convert(as.character(x)))
+  df[1, ] <- sub("0+$", "", as.character(df[1, ]))
+  
   return(df)
 }
 
@@ -250,6 +262,7 @@ ridges_plot_democrat <- function(x){
   
   return(plot)
 }
+
 ridges_plot_republican <- function(x){
   # Combine dataframes
   obamagate_test <- obamagate
@@ -297,3 +310,187 @@ ridges_plot_republican <- function(x){
   
   return(plot)
 }
+
+
+# --------------- Threshold plots
+ridges_plot_republican_adoption <- function(column){
+  # -------------------------------
+  # I limit the threhold number to 50, as over 50 are outliers
+  # -------------------------------
+  # Combine dataframes
+  obamagate_test <- exposed_adopters(obamagate)
+  obamagate_test <- obamagate_test[, 'n']
+  obamagate_test$hashtag <- 'obamagate'
+  
+  qanon_test <- exposed_adopters(qanon)
+  qanon_test <- qanon_test[, 'n']
+  qanon_test$hashtag <- 'qanon'
+  
+  stopthesteal_test <- exposed_adopters(stopthesteal)
+  stopthesteal_test <- stopthesteal_test[, 'n']
+  stopthesteal_test$hashtag <- 'stopthesteal'
+  
+  trump2020_test <- exposed_adopters(trump2020)
+  trump2020_test <- trump2020_test[, 'n']
+  trump2020_test$hashtag <- 'trump2020'
+  
+  whitelivesmatter_test <- exposed_adopters(whitelivesmatter)
+  whitelivesmatter_test <- whitelivesmatter_test[, 'n']
+  whitelivesmatter_test$hashtag <- 'whitelivesmatter'
+  
+  wwg1wga_test <- exposed_adopters(wwg1wga)
+  wwg1wga_test <- wwg1wga_test[, 'n']
+  wwg1wga_test$hashtag <- 'wwg1wga'
+  
+  df <- rbind(wwg1wga_test, whitelivesmatter_test, trump2020_test, stopthesteal_test, qanon_test, obamagate_test)
+  
+  
+  library(ggridges)
+  library(ggplot2)
+  library(viridis)
+  library(hrbrthemes)
+  plot <- ggplot(df, aes(x = log(n), y = hashtag, fill = ..x..)) +
+    geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+    scale_fill_viridis(name = "Threshold Parameter", option = "C") +
+    labs(title = 'ADoption rate for Republican hashtags') +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+  
+  
+  return(plot)
+}
+
+ridges_plot_democrat_adoption <- function(column){
+  # -------------------------------
+  # 
+  # -------------------------------
+  # Combine dataframes
+  acab_test <- acab
+  acab_test <- acab_test[, 'n']
+  acab_test$hashtag <- 'acab'
+  
+  abolishthepolice_test <- abolishthepolice
+  abolishthepolice_test <- abolishthepolice_test[, 'n']
+  abolishthepolice_test$hashtag <- 'abolishthepolice'
+  
+  biden2020_test <- biden2020
+  biden2020_test <- biden2020_test[, 'n']
+  biden2020_test$hashtag <- 'biden2020'
+  
+  blacklivesmatter_test <- blacklivesmatter
+  blacklivesmatter_test <- blacklivesmatter_test[, 'n']
+  blacklivesmatter_test$hashtag <- 'blacklivesmatter'
+  
+  blm_test <- blm
+  blm_test <- blm_test[, 'n']
+  blm_test$hashtag <- 'blm'
+  
+  boycottgoya_test <- boycottgoya
+  boycottgoya_test <- boycottgoya_test[, 'n']
+  boycottgoya_test$hashtag <- 'boycottgoya'
+  
+  defundthepolice_test <- defundthepolice
+  defundthepolice_test <- defundthepolice_test[, 'n']
+  defundthepolice_test$hashtag <- 'defundthepolice'
+  
+  whitesupremacy_test <- whitesupremacy
+  whitesupremacy_test <- whitesupremacy_test[, 'n']
+  whitesupremacy_test$hashtag <- 'whitesupremacy'
+  
+  tre45on_test <- tre45on
+  tre45on_test <- tre45on_test[, 'n']
+  tre45on_test$hashtag <- 'tre45on'
+  
+  
+  trumpvirus_test <- trumpvirus
+  trumpvirus_test <- trumpvirus_test[, 'n']
+  trumpvirus_test$hashtag <- 'trumpvirus'
+  
+  
+  df <- rbind(biden2020_test, acab_test, abolishthepolice_test, blacklivesmatter_test, blm_test, boycottgoya_test, defundthepolice_test, whitesupremacy_test, tre45on_test, trumpvirus_test)
+  
+  
+  library(ggridges)
+  library(ggplot2)
+  library(viridis)
+  library(hrbrthemes)
+  plot <- ggplot(df, aes(x = log(n), y = hashtag, fill = ..x..)) +
+    geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+    scale_fill_viridis(name = "Threshold Parameter", option = "C") +
+    labs(title = 'Adoption rate for Democrat hashtags') +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+  
+  
+  return(plot)
+}
+
+
+
+# --------------  Regression 
+# Create adoption column 
+adopted_column <- function(dataset){
+  # ----------------------------------------------------------------
+  # Takes a dataset and creates a binary column, 1 = user adopted (used hashtag) and 0 if not. 
+  # Similar to the `adopters` fun which subsets the dataset only to users who adopted
+  # ----------------------------------------------------------------
+  dataset$adopted <- NA
+  falseifNA <- function(x){
+    ifelse(is.na(x), FALSE, x)
+  }
+  ifelse2 <- function(x, a, b){
+    ifelse(falseifNA(x), a, b)
+  }
+  dataset$adopted <- ifelse2(is.na(dataset$adoption_time), 0, 1)
+  return(dataset)
+}
+
+# Count total number of exposures
+total_exposures <- function(dataset){
+  # ----------------------------------------------------------------------
+  # Function takes in a dataframe and counts the 
+  # number of exposures (includes adoptions) each user has. 
+  # ----------------------------------------------------------------------
+  temp <- dataset %>% 
+    group_by(screen_name) %>% 
+    count() # count number of times user appears in dataset
+  
+  # rename count column (because other dataframe already has this column name)
+  names(temp)[2] <- 'total_exposures'
+  
+  # merge with original dataframe
+  temp <- merge(temp, dataset, by = 'screen_name', all.y = T)
+  return(temp)
+  
+}
+
+# Combine `adopted_column` and `total_exposures` to make dataset regression-ready
+regression_ready <- function(dataset){
+  # --------------------------------------
+  # Make dataset regression-ready: Create IV and DV column. Keep unique users only. 
+  # --------------------------------------
+  
+  # Code independent variable: total number of exposures
+  # Count number of exposures for each user. Every user is exposed at least once, since they are included in the dataset if they tweeted something (qt, reply, etc) with the hasthag. 
+  dataset <- total_exposures(dataset)
+  
+  # Code dependent variable: If user adopted = 1, if not = 0. 
+  # We can use the `adoption_time` column, which states the time of adoption if user adopted. If they didn't adopt,      value is NA. 
+  dataset <- adopted_column(dataset)
+  
+  # Subset data to unique users only, since we want our regression to be at the user-level
+  dataset <- dataset %>% 
+    distinct(screen_name, .keep_all = TRUE)
+  
+  # return
+  return(dataset)
+}
+
