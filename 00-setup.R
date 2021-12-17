@@ -352,7 +352,7 @@ ridges_plot_republican_adoption <- function(column){
   plot <- ggplot(df, aes(x = log(n), y = hashtag, fill = ..x..)) +
     geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
     scale_fill_viridis(name = "Threshold Parameter", option = "C") +
-    labs(title = 'ADoption rate for Republican hashtags') +
+    labs(title = 'Adoption rate for Republican hashtags') +
     theme_ipsum() +
     theme(
       legend.position="none",

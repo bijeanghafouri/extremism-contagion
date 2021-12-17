@@ -93,6 +93,8 @@ democrat_hashtag_plots
 
 republican_hashtag_plots <- ridges_plot_republican()
 republican_hashtag_plots
+
+republican_hashtag_plots + democrat_hashtag_plots
 ```
 
 
@@ -119,7 +121,7 @@ xtable(republican_descriptives)
 
 Next, let's look at the Democrat hashtags. 
 ```{r, message = F, warning=F, include = F}
-datasets <- list('boycottgoya' = boycottgoya, 'tre45on' = tre45on, 'blacklivesmatter' = blacklivesmatter, 'blm' = blm, 'acab' = acab, 'abolishthepolice' = abolishthepolice, 'defundthepolice' = defundthepolice, 'trumpvirus' = trumpvirus, 'whitesupremacy' = whitesupremacy, 'biden2020' = biden2020)
+datasets <- list('biden2020' = biden2020, 'boycottgoya' = boycottgoya, 'tre45on' = tre45on, 'blacklivesmatter' = blacklivesmatter, 'blm' = blm, 'acab' = acab, 'abolishthepolice' = abolishthepolice, 'defundthepolice' = defundthepolice, 'trumpvirus' = trumpvirus, 'whitesupremacy' = whitesupremacy)
 
 democrat_descriptives <- desc_table(datasets)
 democrat_descriptives
@@ -231,6 +233,10 @@ Finally, let us consider the same sample, but with users who again required at l
 
 
 
+
+
+
+
 ## Regression
 I estimate the effect of exposures on likelihood to adopt the behavior. The independent variable is a count of the number of exposures to the hashtag. I count these exposures regardless of whether the user adopted the hashtag. 
 The dependent variable is binary coded as 1 if the user adopts the behavior and 0 if not. 
@@ -275,6 +281,28 @@ Before running regressions, let's look at the distribution of our IV and DV
 ```{r}
 # Density plot of outcome and predictor 
 # Outcome: adopted
+plot(density(biden2020$adopted))
+
+
+ggplot(biden2020, 
+       aes(x = total_exposures, 
+           fill = as.factor(adopted))) +
+  geom_density(alpha = 0.4) +
+  labs(title = "Title")
+
+
+library(treemapify)
+
+# create a treemap of marriage officials
+plotdata <- biden2020 %>%
+  count(adopted)
+
+ggplot(plotdata, 
+       aes(fill = adopted, 
+           area = n)) +
+  geom_treemap() + 
+  labs(title = "Marriages by officiate")
+
 
 
 # Predictor: total number of exposures 
@@ -289,26 +317,43 @@ Now, let's run regressions.
 # IV = `total_exposures`
 
 models <- list(
-  "biden2020"     = lm(adopted ~ total_exposures + theta, biden2020),
-  "acab"     = lm(adopted ~ total_exposures + theta, acab),
-  "blacklivesmatter"     = lm(adopted ~ total_exposures + theta, blacklivesmatter),
-  "blm"     = lm(adopted ~ total_exposures + theta, blm),
-  "boycottgoya" = lm(adopted ~ total_exposures + theta, boycottgoya),
-  "tre45on" = lm(adopted ~ total_exposures + theta, tre45on),
-  "abolishthepolice" = lm(adopted ~ total_exposures + theta, abolishthepolice),
-  "defundthepolice" = lm(adopted ~ total_exposures + theta, defundthepolice),
-  "trumpvirus" = lm(adopted ~ total_exposures + theta, trumpvirus),
-  "whitesupremacy" = lm(adopted ~ total_exposures + theta, whitesupremacy)
+  "biden2020"     = glm(adopted ~ total_exposures + theta, data = biden2020, family = binomial),
+  "acab"     = glm(adopted ~ total_exposures + theta, data =  acab, family = binomial),
+  "blacklivesmatter"     = glm(adopted ~ total_exposures + theta, data =  blacklivesmatter, family = binomial),
+  "blm"     = glm(adopted ~ total_exposures + theta, data =  blm, family = binomial),
+  "boycottgoya" = glm(adopted ~ total_exposures + theta, data =  boycottgoya, family = binomial),
+  "tre45on" = glm(adopted ~ total_exposures + theta, data =  tre45on, family = binomial),
+  "abolishthepolice" = glm(adopted ~ total_exposures + theta, data =  abolishthepolice, family = binomial),
+  "defundthepolice" = glm(adopted ~ total_exposures + theta, data =  defundthepolice, family = binomial),
+  "trumpvirus" = glm(adopted ~ total_exposures + theta, data =  trumpvirus, family = binomial),
+  "whitesupremacy" = glm(adopted ~ total_exposures + theta, data =  whitesupremacy, family = binomial)
   )
 
 
+
+
+
 cm <- c( '(Intercept)' = 'Constant', 'total_exposures' = 'Exposures')
-cap <- 'Regression for Democrat hashtags'
+cap <- 'GLM for Democrat hashtags'
 tab <- modelsummary(models, output = 'kableExtra',
                 stars = TRUE, 
                 coef_map = cm,
                 title = cap, gof_omit = 'IC|Log|Adj') %>% 
   kable_classic_2(full_width = F) %>% row_spec(3, color = 'red')
+tab
+
+
+tab <- modelsummary(models, output = 'latex',
+                stars = TRUE, 
+                coef_map = cm,
+                title = cap, gof_omit = 'IC|Log|Adj') 
+
+
+
+
+
+
+
 
 # Plot regression coefficients
 modelplot(models, coef_omit = 'Interc') +
@@ -319,6 +364,31 @@ modelplot(models, coef_omit = 'Interc') +
     scale_color_manual(values = wes_palette('Darjeeling1'))
 ```
 
+
+
+
+Let's run the same regression, but for the entire dataset. I will merge all dataframes of extremist hashtags, and compare to the moderate #biden2020 hashtag
+```{r}
+extreme_democrat_hashtag_df <- rbind(acab, blm, blacklivesmatter, boycottgoya, tre45on, abolishthepolice, defundthepolice, trumpvirus, whitesupremacy)
+
+
+
+models <- list(
+  "biden2020"     = glm(adopted ~ total_exposures + theta, biden2020, family = binomial),
+  "Extremist hashtags"     = glm(adopted ~ total_exposures + theta, extreme_democrat_hashtag_df, family = binomial)
+  )
+
+
+cm <- c( '(Intercept)' = 'Constant', 'total_exposures' = 'Exposures')
+cap <- 'Regression for Democrat hashtags'
+tab <- modelsummary(models, output = 'kableExtra',
+                stars = TRUE, 
+                coef_map = cm,
+                title = cap, gof_omit = 'IC|Log|Adj') %>% 
+  kable_classic_2(full_width = F) %>% row_spec(3, color = 'red')
+tab
+
+```
 
 
 
@@ -332,23 +402,31 @@ Regression for republicans
 # IV = `total_exposures`
 
 models <- list(
-  "trump2020"     = lm(adopted ~ total_exposures + theta, trump2020),
-  "obamagate"     = lm(adopted ~ total_exposures + theta, obamagate),
-  "qanon"     = lm(adopted ~ total_exposures + theta, qanon),
-  "stopthesteal"     = lm(adopted ~ total_exposures + theta, stopthesteal),
-  "whitelivesmatter" = lm(adopted ~ total_exposures + theta, whitelivesmatter),
-  "wwg1wga" = lm(adopted ~ total_exposures + theta, wwg1wga)
+  "trump2020"     = glm(adopted ~ total_exposures + theta, trump2020, family = binomial),
+  "obamagate"     = glm(adopted ~ total_exposures + theta, obamagate, family = binomial),
+  "qanon"     = glm(adopted ~ total_exposures + theta, qanon, family = binomial),
+  "stopthesteal"     = glm(adopted ~ total_exposures + theta, stopthesteal, family = binomial),
+  "whitelivesmatter" = glm(adopted ~ total_exposures + theta, whitelivesmatter, family = binomial),
+  "wwg1wga" = glm(adopted ~ total_exposures + theta, wwg1wga, family = binomial)
   )
 
 
 cm <- c( '(Intercept)' = 'Constant', 'total_exposures' = 'Exposures', 'theta' = 'ideology')
-cap <- 'Regression for Republican hashtags'
+cap <- 'GLM for Republican hashtags'
 tab <- modelsummary(models, output = 'kableExtra',
                 stars = TRUE, 
                 coef_map = cm,
                 title = cap, gof_omit = 'IC|Log|Adj') %>% 
   kable_classic_2(full_width = F) %>% row_spec(3, color = 'red')
 tab
+
+
+tab <- modelsummary(models, output = 'latex',
+                stars = TRUE, 
+                coef_map = cm,
+                title = cap, gof_omit = 'IC|Log|Adj')
+tab
+
 
 
 # Plot regression coefficients
@@ -361,4 +439,35 @@ modelplot(models, coef_omit = 'Interc') +
 
 
 ```
+
+
+
+
+
+
+
+
+Let's run the same regression, but for the entire dataset. I will merge all dataframes of extremist hashtags, and compare to the moderate #biden2020 hashtag
+```{r}
+extreme_republican_hashtag_df <- rbind(obamagate, qanon, stopthesteal, whitelivesmatter, wwg1wga)
+
+
+models <- list(
+  "trump2020"     = lm(adopted ~ total_exposures + theta, trump2020),
+  "Extremist hashtags"     = lm(adopted ~ total_exposures + theta, extreme_republican_hashtag_df)
+  )
+
+
+cm <- c( '(Intercept)' = 'Constant', 'total_exposures' = 'Exposures')
+cap <- 'Regression for Republican hashtags'
+tab <- modelsummary(models, output = 'kableExtra',
+                stars = TRUE, 
+                coef_map = cm,
+                title = cap, gof_omit = 'IC|Log|Adj') %>% 
+  kable_classic_2(full_width = F) %>% row_spec(3, color = 'red')
+tab
+```
+
+
+
 
