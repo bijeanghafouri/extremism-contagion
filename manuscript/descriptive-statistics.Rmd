@@ -94,7 +94,6 @@ democrat_hashtag_plots
 republican_hashtag_plots <- ridges_plot_republican()
 republican_hashtag_plots
 
-republican_hashtag_plots + democrat_hashtag_plots
 ```
 
 
