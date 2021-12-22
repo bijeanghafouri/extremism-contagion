@@ -9,9 +9,39 @@
 library(tidyverse)
 library(parallel)
 library(data.table)
-setwd('/scratch2/echen920/elections/clean/2020-07') 
 cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK")) - 1
-files <- list.files(pattern = '*.csv')
+#files <- list.files(pattern = '*.csv')
+
+
+
+setwd('/scratch2/echen920/elections/clean/2020-06') 
+files_06 <- list.files(pattern = '*.csv')
+files_06 <- paste("/scratch2/echen920/elections/clean/2020-06/", files_06,  sep="")
+
+setwd('/scratch2/echen920/elections/clean/2020-07') 
+files_07 <- list.files(pattern = '*.csv')
+files_07 <- paste("/scratch2/echen920/elections/clean/2020-07/", files_07,  sep="")
+
+setwd('/scratch2/echen920/elections/clean/2020-08') 
+files_08 <- list.files(pattern = '*.csv')
+files_08 <- paste("/scratch2/echen920/elections/clean/2020-08/", files_08,  sep="")
+
+setwd('/scratch2/echen920/elections/clean/2020-09') 
+files_09 <- list.files(pattern = '*.csv')
+files_09 <- paste("/scratch2/echen920/elections/clean/2020-09/", files_09,  sep="")
+
+setwd('/scratch2/echen920/elections/clean/2020-10') 
+files_10 <- list.files(pattern = '*.csv')
+files_10 <- paste("/scratch2/echen920/elections/clean/2020-10/", files_10,  sep="")
+
+
+files <- append(files_06, files_07) 
+files <- append(files, files_08)
+files <- append(files, files_09)
+files <- append(files, files_10)
+
+
+
 
 
 # Functions
@@ -78,7 +108,7 @@ ideology <- results[[1]]
 rm(results)
 
 
-filename <- '/project/pbarbera_665/bghafour/twitter-2020-election/data/tweets_july2020_total_ideology.csv'
+filename <- '/project/pbarbera_665/bghafour/twitter-2020-election/data/tweets_total_ideology.csv'
 read_df <- function(x){
   require(data.table)
   df <- data.table::fread(x, header = T, sep = ',')
@@ -121,7 +151,7 @@ tweets_ideology <- ideology[tweets]
 tweets <- tweets_ideology
 
 setwd('/project/pbarbera_665/bghafour/twitter-2020-election/data/')
-fwrite(tweets, 'tweets_july2020_total_ideology.csv')
+fwrite(tweets, 'tweets_total_ideology.csv')
 
 
 
