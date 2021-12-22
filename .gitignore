@@ -1,6 +1,9 @@
 .extremist-contagion.Rproj
 .initial-testing.R
 data/
+data/old-data
+.Rproj.user
+
    
 # History files
 .Rhistory
