@@ -1,8 +1,7 @@
 .extremist-contagion.Rproj
 data/
-data/old-data
+data/old-data/
 .Rproj.user
-
    
 # History files
 .Rhistory
@@ -12,4 +11,4 @@ data/old-data
 .RData
 
 # data
-.tweets_july2020_total_ideology.csv
+#.tweets_july2020_total_ideology.csv
